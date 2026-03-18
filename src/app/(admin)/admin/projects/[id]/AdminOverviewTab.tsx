@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle, XCircle, FileSignature, Edit3, Settings2 } from "lucide-react";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
+import { sendNotification } from "@/utils/notifications";
 
 export default function AdminOverviewTab({ project, adminId }: { project: any, adminId: string }) {
   const router = useRouter();
@@ -25,10 +26,11 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
 
   const handleSendQuote = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Sending quote for project:", project.id);
     setLoading(true);
     try {
-      // Create quote
-      await supabase.from("quotes").insert({
+      // 1. Create quote
+      const { error: quoteError } = await supabase.from("quotes").insert({
         project_id: project.id,
         admin_id: adminId,
         price: Number(quotePrice),
@@ -38,13 +40,19 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
         status: "pending"
       });
 
-      // Update project status
-      await supabase.from("projects").update({ status: "quoted" }).eq("id", project.id);
+      if (quoteError) throw quoteError;
+      console.log("Quote inserted successfully");
+
+      // 2. Update project status
+      const { error: projectError } = await supabase.from("projects").update({ status: "quoted" }).eq("id", project.id);
+      if (projectError) throw projectError;
+      console.log("Project status updated to quoted");
       
+      alert("Quote sent successfully!");
       router.refresh();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send quote.");
+    } catch (err: any) {
+      console.error("Error sending quote:", err);
+      alert(`Failed to send quote: ${err.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -53,16 +61,19 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
   const handlePaymentAction = async (paymentId: string, action: "confirmed" | "rejected") => {
     setLoading(true);
     try {
-      await supabase.from("payments").update({ status: action }).eq("id", paymentId);
+      const { error: paymentError } = await supabase.from("payments").update({ status: action }).eq("id", paymentId);
+      if (paymentError) throw paymentError;
       
       if (action === "confirmed") {
-        await supabase.from("projects").update({ status: "in_progress" }).eq("id", project.id);
+        const { error: projectError } = await supabase.from("projects").update({ status: "in_progress" }).eq("id", project.id);
+        if (projectError) throw projectError;
       }
       
+      alert(`Payment ${action === "confirmed" ? "approved" : "rejected"} successfully.`);
       router.refresh();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to verify payment.");
+    } catch (err: any) {
+      console.error(`Error in payment action (${action}):`, err);
+      alert(`Failed to verify payment: ${err.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -71,11 +82,24 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
   const handleUpdateStatus = async () => {
     setLoading(true);
     try {
-      await supabase.from("projects").update({ status: manualStatus }).eq("id", project.id);
+      const { error } = await supabase.from("projects").update({ status: manualStatus }).eq("id", project.id);
+      if (error) throw error;
+      
+      // Notify student of status update
+      await sendNotification({
+        userId: project.student_id,
+        title: "Project Status Updated",
+        message: `The status of your project '${project.title}' has been updated to: ${manualStatus.replace('_', ' ')}`,
+        link: `/dashboard/projects/${project.id}`,
+        type: "status_update"
+      });
+      console.log("Student notified of status override");
+      
+      alert("Project status updated successfully.");
       router.refresh();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update status.");
+    } catch (err: any) {
+      console.error("Error updating status:", err);
+      alert(`Failed to update status: ${err.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }

@@ -8,8 +8,6 @@ type Profile = {
   id: string;
   full_name: string;
   email: string;
-  university?: string;
-  student_id?: string;
   role: 'student' | 'admin' | 'superadmin';
 };
 
@@ -83,10 +81,24 @@ export function useAuth() {
     };
   }, []);
 
+  const refreshProfile = async () => {
+    if (!user) return;
+    const { data: profileData, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    
+    if (!error && profileData) {
+      setProfile(profileData as Profile);
+    }
+  };
+
   return {
     user,
     profile,
     isLoading,
+    refreshProfile,
     isAdmin: profile?.role === 'admin' || profile?.role === 'superadmin',
     isSuperAdmin: profile?.role === 'superadmin',
   };

@@ -12,7 +12,7 @@ type Message = {
   id: string;
   project_id: string;
   sender_id: string;
-  message: string;
+  content: string;
   created_at: string;
   profiles?: { full_name: string; role: string };
 };
@@ -90,6 +90,28 @@ export function ChatWindow({
     scrollToBottom();
   }, [messages]);
 
+  // 3. Mark messages as read when viewed
+  useEffect(() => {
+    if (!projectId || !currentUserId || messages.length === 0) return;
+
+    const markAsRead = async () => {
+      const { error } = await supabase
+        .from("messages")
+        .update({ is_read: true })
+        .eq("project_id", projectId)
+        .neq("sender_id", currentUserId)
+        .eq("is_read", false);
+
+      if (error) {
+        console.error("Error marking messages as read:", error);
+      } else {
+        console.log("Messages marked as read for project:", projectId);
+      }
+    };
+
+    markAsRead();
+  }, [projectId, currentUserId, messages.length]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -103,11 +125,15 @@ export function ChatWindow({
     setNewMessage(""); // Optimistic clear
 
     try {
-      await supabase.from("messages").insert({
+      const { error } = await supabase.from("messages").insert({
         project_id: projectId,
         sender_id: currentUserId,
-        message: msgText
+        content: msgText
       });
+      if (error) {
+        console.error("Failed to send message:", error);
+        throw error;
+      }
     } catch (err) {
       console.error(err);
       setNewMessage(msgText); // Restore if failed
@@ -157,12 +183,12 @@ export function ChatWindow({
                       : (isAdminMsg ? 'bg-sidebar-bg text-white border border-sidebar-hover' : 'bg-surface-2 border border-border text-text-primary')
                     }
                   `}>
-                    {!isMine && (
-                      <span className="block text-[10px] font-bold opacity-70 mb-1 tracking-wider uppercase">
-                        {msg.profiles?.full_name || 'User'} {isAdminMsg && '✦ ADMIN'}
+                    {!isMine && !isAdminMsg && (
+                      <span className="block text-[10px] font-bold opacity-70 mb-1 tracking-wider uppercase text-text-muted">
+                        {msg.profiles?.full_name || 'User'}
                       </span>
                     )}
-                    <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.message}</p>
+                    <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                     <span className={`text-[10px] block mt-1 ${isMine ? 'text-white/70 text-right' : 'text-text-muted text-left'}`}>
                       {format(new Date(msg.created_at), "p")}
                     </span>

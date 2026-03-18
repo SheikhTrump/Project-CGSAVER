@@ -31,7 +31,6 @@ export default async function AdminUsersPage() {
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
                   <th className="px-6 py-4">Role</th>
-                  <th className="px-6 py-4">University ID</th>
                   <th className="px-6 py-4">Joined</th>
                 </tr>
               </thead>
@@ -49,9 +48,7 @@ export default async function AdminUsersPage() {
                         {p.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-text-secondary">
-                      {p.university ? `${p.university} (${p.student_id})` : '-'}
-                    </td>
+
                     <td className="px-6 py-4 text-text-secondary whitespace-nowrap">
                       {format(new Date(p.created_at), "MMM d, yyyy")}
                     </td>

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
+import { StatusFilterSelect } from "@/components/StatusFilterSelect";
 import Link from "next/link";
 import { format } from "date-fns";
 import { FolderKanban, Search, Filter } from "lucide-react";
@@ -63,27 +64,7 @@ export default async function AdminProjectsPage({
             <Button type="submit" variant="secondary" className="whitespace-nowrap">Search</Button>
           </form>
 
-          <form className="w-full sm:w-auto flex items-center gap-2">
-            <Filter className="h-4 w-4 text-text-muted hidden sm:block" />
-            <input type="hidden" name="query" value={query} />
-            <select
-              name="status"
-              defaultValue={statusFilter}
-              onChange={(e) => e.target.form?.submit()}
-              className="flex h-10 w-full rounded-md border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-            >
-              <option value="all">All Statuses</option>
-              <option value="submitted">Submitted (Needs Quote)</option>
-              <option value="in_review">In Review</option>
-              <option value="quoted">Quoted</option>
-              <option value="payment_pending">Payment Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="delivered">Delivered</option>
-              <option value="revision_requested">Revision</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </form>
+          <StatusFilterSelect defaultValue={statusFilter} query={query} />
         </div>
 
         {/* Results Table */}
@@ -94,7 +75,7 @@ export default async function AdminProjectsPage({
             <p className="text-text-secondary mt-2">Try adjusting your search or filters.</p>
             {(query || statusFilter !== "all") && (
               <Button variant="link" asChild className="mt-4 text-danger">
-                <Link href="/admin/dashboard/projects">Clear all filters</Link>
+                <Link href="/admin/projects">Clear all filters</Link>
               </Button>
             )}
           </div>
@@ -114,7 +95,7 @@ export default async function AdminProjectsPage({
                 {projects.map((project: any) => (
                   <tr key={project.id} className="hover:bg-surface-2/30 transition-colors">
                     <td className="px-6 py-4 font-medium text-text-primary max-w-[250px] truncate">
-                      <Link href={`/admin/dashboard/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors block" title={project.title}>
+                      <Link href={`/admin/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors block" title={project.title}>
                         {project.title}
                       </Link>
                     </td>
@@ -130,7 +111,7 @@ export default async function AdminProjectsPage({
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="outline" size="sm" asChild className="rounded-btn font-medium">
-                        <Link href={`/admin/dashboard/projects/${project.id}`}>Manage</Link>
+                        <Link href={`/admin/projects/${project.id}`}>Manage</Link>
                       </Button>
                     </td>
                   </tr>

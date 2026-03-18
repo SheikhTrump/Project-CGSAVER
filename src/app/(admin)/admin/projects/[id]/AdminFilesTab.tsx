@@ -14,6 +14,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [deliverables, setDeliverables] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -24,47 +25,76 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
   const handleUploadDeliverables = async (e: React.FormEvent) => {
     e.preventDefault();
     if (deliverables.length === 0) return;
+    
+    console.log(`Starting delivery of ${deliverables.length} files for project:`, project.id);
     setLoading(true);
+    setUploadProgress("");
 
     try {
+      let count = 0;
       for (const file of deliverables) {
+        count++;
+        setUploadProgress(`Uploading ${count} of ${deliverables.length}: ${file.name}...`);
+        console.log(`Uploading file ${count}/${deliverables.length}: ${file.name}`);
+        
         const filePath = `${project.student_id}/${project.id}/deliverable_${Date.now()}_${file.name}`;
         
+        // 1. Storage Upload
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("project_files")
           .upload(filePath, file);
 
         if (uploadError) {
-          console.error("Upload error for", file.name, uploadError);
-          continue; 
+          console.error(`Upload error for ${file.name}:`, uploadError);
+          throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
+        }
+
+        if (!uploadData?.path) {
+          throw new Error(`No upload path returned for ${file.name}`);
         }
 
         const { data: publicUrlData } = supabase.storage
           .from("project_files")
           .getPublicUrl(uploadData.path);
 
-        await supabase.from("project_files").insert({
+        // 2. Database Record Creation
+        const { error: insertError } = await supabase.from("project_files").insert({
           project_id: project.id,
           file_url: publicUrlData.publicUrl,
           file_name: file.name,
           uploaded_by: adminId,
           file_type: "deliverable",
         });
+
+        if (insertError) {
+          console.error(`Database error for ${file.name}:`, insertError);
+          throw new Error(`Failed to save record for ${file.name}: ${insertError.message}`);
+        }
+        
+        console.log(`Successfully processed ${file.name}`);
       }
 
-      // Optionally auto-update status to "delivered"
+      // 3. Update project status if needed
       if (project.status === "in_progress") {
-        await supabase.from("projects").update({ status: "delivered" }).eq("id", project.id);
+        setUploadProgress("Updating project status...");
+        const { error: projectError } = await supabase.from("projects").update({ status: "delivered" }).eq("id", project.id);
+        if (projectError) {
+          console.error("Project status update error:", projectError);
+          throw new Error(`Failed to update project status: ${projectError.message}`);
+        }
+        console.log("Project status updated to delivered");
       }
 
+      alert("Deliverables uploaded and delivered to student successfully!");
       setDeliverables([]);
       router.refresh();
       
-    } catch (error) {
-      console.error(error);
-      alert("Failed to upload deliverables.");
+    } catch (error: any) {
+      console.error("Upload deliverables error:", error);
+      alert(error.message || "An unexpected error occurred during upload.");
     } finally {
       setLoading(false);
+      setUploadProgress("");
     }
   };
 
@@ -164,9 +194,13 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
               </div>
             )}
 
-            <Button type="submit" disabled={loading || deliverables.length === 0} className="w-full bg-info hover:bg-blue-600 text-white rounded-pill">
+            <Button 
+              type="submit" 
+              disabled={loading || deliverables.length === 0} 
+              className="w-full bg-info hover:bg-blue-600 text-white rounded-pill"
+            >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Upload & Deliver to Student
+              {loading ? (uploadProgress || "Uploading...") : "Upload & Deliver to Student"}
             </Button>
           </form>
         </CardContent>

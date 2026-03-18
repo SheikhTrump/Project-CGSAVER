@@ -19,24 +19,38 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User as UserIcon, LogOut as LogOutIcon, ShieldCheck } from "lucide-react";
 
 const navItems = [
-  { href: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/dashboard/projects", label: "All Projects", icon: FolderKanban },
-  { href: "/admin/dashboard/payments", label: "Payments", icon: CreditCard },
-  { href: "/admin/dashboard/users", label: "Users", icon: Users },
-  { href: "/admin/dashboard/announcements", label: "Announcements", icon: Megaphone },
+  { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/projects", label: "All Projects", icon: FolderKanban },
+  { href: "/admin/payments", label: "Payments", icon: CreditCard },
+  { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { profile, isSuperAdmin } = useAuth();
+  const { profile, user, isSuperAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    try {
+      await supabase.auth.signOut();
+      window.location.href = "/login";
+    } catch (err) {
+      console.error("Logout failed:", err);
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -54,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
       >
         <div className="flex h-16 items-center px-6">
-          <Link href="/admin/dashboard" className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <Link href="/admin" className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
             <span className="bg-danger text-white p-1 rounded-md text-xs font-black">ADMIN</span>
             CGSAVER
           </Link>
@@ -64,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="text-xs font-semibold text-sidebar-text/60 uppercase tracking-wider mb-2 px-2">Management</div>
           
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin/dashboard");
+            const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin");
             const Icon = item.icon;
             
             return (
@@ -89,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="mt-8">
               <div className="text-xs font-semibold text-danger border-t border-sidebar-hover/50 pt-6 mt-6 uppercase tracking-wider mb-2 px-2">Super Admin</div>
               <Link
-                href="/admin/dashboard/config"
+                href="/admin/config"
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors text-sidebar-text hover:bg-sidebar-hover/50 hover:text-white"
@@ -143,11 +157,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           
           <div className="flex items-center gap-4">
             <NotificationBell />
-            <Avatar className="h-8 w-8 cursor-pointer border border-border">
-              <AvatarFallback className="bg-danger text-white text-xs font-bold">
-                {profile?.full_name?.charAt(0) || "A"}
-              </AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="h-8 w-8 cursor-pointer border border-border transition-all hover:ring-2 hover:ring-danger/50 active:scale-95">
+                  <AvatarFallback className="bg-danger text-white text-xs font-bold">
+                    {profile?.full_name?.charAt(0) || "A"}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 mt-1">
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="font-semibold text-text-primary">{profile?.full_name}</span>
+                  <span className="text-xs text-text-muted font-normal">{user?.email}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/admin/profile" className="flex items-center">
+                    <UserIcon className="mr-2 h-4 w-4 text-danger" />
+                    <span>Admin Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="cursor-pointer text-danger focus:text-danger focus:bg-danger/10"
+                  onClick={handleLogout}
+                >
+                  <LogOutIcon className="mr-2 h-4 w-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 

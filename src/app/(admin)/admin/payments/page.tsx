@@ -46,7 +46,7 @@ export default async function AdminPaymentsPage() {
                       {p.projects?.profiles?.full_name || "Unknown"}
                     </td>
                     <td className="px-6 py-4 max-w-[200px] truncate">
-                      <Link href={`/admin/dashboard/projects/${p.project_id}`} className="hover:text-accent hover:underline">
+                      <Link href={`/admin/projects/${p.project_id}`} className="hover:text-accent hover:underline">
                         {p.projects?.title}
                       </Link>
                     </td>

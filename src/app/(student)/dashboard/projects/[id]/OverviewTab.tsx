@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, AlertTriangle, FileCheck2, CheckCircle, CreditCard, XCircle } from "lucide-react";
+import { notifyAdmins } from "@/utils/notifications";
 
 export default function ProjectOverviewTab({ project }: { project: any }) {
   const router = useRouter();
@@ -20,19 +21,23 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
   const handleQuoteAction = async (action: "accept" | "reject", quoteId: string) => {
     setLoading(true);
+    console.log(`${action}ing quote ${quoteId} for project ${project.id}`);
     try {
       const newStatus = action === "accept" ? "payment_pending" : "submitted";
       
-      // Update Quote
-      await supabase.from("quotes").update({ status: action === "accept" ? "accepted" : "rejected" }).eq("id", quoteId);
+      // 1. Update Quote
+      const { error: quoteError } = await supabase.from("quotes").update({ status: action === "accept" ? "accepted" : "rejected" }).eq("id", quoteId);
+      if (quoteError) throw quoteError;
       
-      // Update Project Status
-      await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
+      // 2. Update Project Status
+      const { error: projectError } = await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
+      if (projectError) throw projectError;
       
+      alert(`Quote ${action === "accept" ? "accepted" : "declined"} successfully.`);
       router.refresh();
-    } catch (e) {
-      console.error(e);
-      alert("Failed to perform action");
+    } catch (e: any) {
+      console.error(`Error ${action}ing quote:`, e);
+      alert(`Failed to perform action: ${e.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -42,12 +47,16 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
     e.preventDefault();
     if (!trxId) return;
     setLoading(true);
+    console.log("Submitting payment for project:", project.id);
 
     try {
       let uploadUrl = null;
       if (paymentFile) {
         const filePath = `${project.student_id}/${project.id}/payment_${Date.now()}_${paymentFile.name}`;
-        const { data: uploadData } = await supabase.storage.from("project_files").upload(filePath, paymentFile);
+        const { data: uploadData, error: uploadError } = await supabase.storage.from("project_files").upload(filePath, paymentFile);
+        
+        if (uploadError) throw uploadError;
+        
         if (uploadData) {
           const { data } = supabase.storage.from("project_files").getPublicUrl(uploadData.path);
           uploadUrl = data.publicUrl;
@@ -56,7 +65,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
       // 1. Record payment
       const quote = project.quotes?.find((q: any) => q.status === "accepted");
-      await supabase.from("payments").insert({
+      const { error: paymentError } = await supabase.from("payments").insert({
         project_id: project.id,
         amount: quote?.price || 0,
         method: paymentMethod,
@@ -65,15 +74,13 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
         status: "pending"
       });
 
-      // 2. We don't change project status to 'in_progress' automatically. Admins verify payment first.
-      // But standard platforms might just say "Payment Pending Verification". The DB design says payments start 'pending'.
-      // We will leave status as 'payment_pending' or maybe 'in_review_payment'. We'll stick to 'payment_pending' and let admin change to 'in_progress'.
+      if (paymentError) throw paymentError;
 
       alert("Payment details submitted successfully. An Admin will verify it shortly.");
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to submit payment");
+    } catch (error: any) {
+      console.error("Payment submission error:", error);
+      alert(`Failed to submit payment: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -81,12 +88,29 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
   const handleDeliveryAction = async (action: "complete" | "revision") => {
     setLoading(true);
+    console.log(`Action: ${action} for project ${project.id}`);
     try {
       const newStatus = action === "complete" ? "completed" : "revision_requested";
-      await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
+      const { error } = await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
+      
+      if (error) throw error;
+      
+      // Notify admins of revision request
+      if (action === "revision") {
+        await notifyAdmins({
+          title: "Revision Requested",
+          message: `Student requested a revision for project: ${project.title}`,
+          link: `/admin/projects/${project.id}`,
+          type: "revision_request"
+        });
+        console.log("Admins notified of revision request");
+      }
+      
+      alert(`Project ${action === "complete" ? "accepted" : "revision request sent"} successfully.`);
       router.refresh();
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error(`Error during ${action} action:`, e);
+      alert(`Failed to perform action: ${e.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -172,6 +196,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
                 onClick={() => handleQuoteAction('accept', pendingQuote.id)}
                 disabled={loading}
               >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Accept & Proceed to Payment
               </Button>
               <Button 
@@ -259,7 +284,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
                 onClick={() => handleDeliveryAction('complete')}
                 disabled={loading}
               >
-                <CheckCircle className="mr-2 h-5 w-5" />
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
                 Accept & Mark Completed
               </Button>
               <Button 
@@ -268,7 +293,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
                 onClick={() => handleDeliveryAction('revision')}
                 disabled={loading}
               >
-                <AlertTriangle className="mr-2 h-4 w-4" />
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <AlertTriangle className="mr-2 h-4 w-4" />}
                 Request Revision
               </Button>
             </CardContent>

@@ -14,7 +14,7 @@ import { Loader2, UploadCloud, XCircle } from "lucide-react";
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -48,10 +48,16 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    console.log("Submit clicked. User:", user?.id);
+    
+    if (!user) {
+      setErrorMsg("You must be logged in to submit a project.");
+      return;
+    }
     
     setLoading(true);
     setErrorMsg("");
+    console.log("Form data:", formData);
 
     try {
       // 1. Insert Project
@@ -72,6 +78,7 @@ export default function NewProjectPage() {
       if (projectError) throw new Error(projectError.message);
 
       // 2. Upload Files
+      const failedFiles: string[] = [];
       if (files.length > 0 && project) {
         for (const file of files) {
           const filePath = `${user.id}/${project.id}/${Date.now()}_${file.name}`;
@@ -82,7 +89,14 @@ export default function NewProjectPage() {
 
           if (uploadError) {
             console.error("Upload error for", file.name, uploadError);
+            failedFiles.push(file.name);
             continue; // Skip failed file but keep going
+          }
+
+          if (!uploadData?.path) {
+            console.error("No upload data returned for", file.name);
+            failedFiles.push(file.name);
+            continue;
           }
 
           const { data: publicUrlData } = supabase.storage
@@ -90,20 +104,33 @@ export default function NewProjectPage() {
             .getPublicUrl(uploadData.path);
 
           // 3. Insert File Record
-          await supabase.from("project_files").insert({
+          const { error: insertError } = await supabase.from("project_files").insert({
             project_id: project.id,
             file_url: publicUrlData.publicUrl,
             file_name: file.name,
             uploaded_by: user.id,
             file_type: "requirement",
           });
+
+          if (insertError) {
+            console.error("File record insert error for", file.name, insertError);
+            failedFiles.push(file.name);
+          }
         }
+      }
+
+      if (failedFiles.length > 0 && failedFiles.length === files.length) {
+        // All files failed — show error but still redirect since project was created
+        setErrorMsg(`Project created but all file uploads failed. Please re-upload from the project page. Failed: ${failedFiles.join(", ")}`);
+        setTimeout(() => router.push(`/dashboard/projects/${project.id}`), 3000);
+        return;
       }
 
       // 4. Redirect to project detail
       router.push(`/dashboard/projects/${project.id}`);
     } catch (error: any) {
       setErrorMsg(error.message || "An unexpected error occurred.");
+    } finally {
       setLoading(false);
     }
   };
@@ -213,9 +240,13 @@ export default function NewProjectPage() {
             <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-accent hover:bg-accent-hover text-white rounded-btn px-6" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Submitting..." : "Submit Project"}
+            <Button 
+              type="submit" 
+              className="bg-accent hover:bg-accent-hover text-white rounded-btn px-6" 
+              disabled={loading || authLoading}
+            >
+              {(loading || authLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {authLoading ? "Loading Auth..." : loading ? "Submitting..." : "Submit Project"}
             </Button>
           </CardFooter>
         </Card>

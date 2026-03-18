@@ -33,9 +33,15 @@ export default async function AdminDashboardHome() {
     .select("*", { count: 'exact', head: true })
     .eq("status", "submitted");
 
-  // 4. Fetch Unread Messages (Phase 4 placeholder, just fetch 0 for now)
-  const unreadMessagesCount = 0; 
-
+  // 4. Fetch Unread Messages (Count messages from students that are unread)
+  const { data: unreadMessages } = await supabase
+    .from("messages")
+    .select("sender_id, profiles!sender_id(role)")
+    .eq("is_read", false);
+  
+  const unreadMessagesCount = unreadMessages?.filter(m => 
+    (m.profiles as any)?.role === 'student'
+  ).length || 0;
   // 5. Fetch Recent Projects (with student profile info)
   const { data: recentProjects } = await supabase
     .from("projects")
@@ -104,7 +110,7 @@ export default async function AdminDashboardHome() {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-text-primary tracking-tight">Recent Submissions</h2>
           <Button variant="link" asChild className="text-danger hover:text-danger/80 p-0 h-auto font-semibold">
-            <Link href="/admin/dashboard/projects">View all <ArrowRight className="ml-1 h-4 w-4 inline" /></Link>
+            <Link href="/admin/projects">View all <ArrowRight className="ml-1 h-4 w-4 inline" /></Link>
           </Button>
         </div>
         
@@ -129,7 +135,7 @@ export default async function AdminDashboardHome() {
                   {recentProjects.map((project: any) => (
                     <tr key={project.id} className="hover:bg-surface-2/30 transition-colors">
                       <td className="px-6 py-4 font-medium text-text-primary max-w-[200px] truncate">
-                        <Link href={`/admin/dashboard/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors">
+                        <Link href={`/admin/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors">
                           {project.title}
                         </Link>
                       </td>
@@ -145,7 +151,7 @@ export default async function AdminDashboardHome() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Button variant="outline" size="sm" asChild className="rounded-btn font-medium">
-                          <Link href={`/admin/dashboard/projects/${project.id}`}>Manage</Link>
+                          <Link href={`/admin/projects/${project.id}`}>Manage</Link>
                         </Button>
                       </td>
                     </tr>

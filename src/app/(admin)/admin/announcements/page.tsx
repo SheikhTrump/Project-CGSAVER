@@ -32,7 +32,7 @@ export default function AdminAnnouncementsPage() {
   const fetchAnnouncements = async () => {
     const { data } = await supabase
       .from("announcements")
-      .select("*, profiles(full_name)")
+      .select("*, profiles!admin_id(full_name)")
       .order("created_at", { ascending: false });
     if (data) setAnnouncements(data);
   };
@@ -45,10 +45,10 @@ export default function AdminAnnouncementsPage() {
     try {
       await supabase.from("announcements").insert({
         title: formData.title,
-        content: formData.content,
+        body: formData.content,
         is_urgent: formData.is_urgent,
         is_pinned: formData.is_pinned,
-        created_by: user.id
+        admin_id: user.id
       });
       
       setFormData({ title: "", content: "", is_urgent: false, is_pinned: false });
@@ -153,7 +153,7 @@ export default function AdminAnnouncementsPage() {
                     </Button>
                   </div>
                   
-                  <p className="text-text-secondary text-sm whitespace-pre-wrap mb-4">{ann.content}</p>
+                  <p className="text-text-secondary text-sm whitespace-pre-wrap mb-4">{ann.body}</p>
                   
                   <div className="flex items-center justify-between text-xs text-text-muted border-t border-border/50 pt-3">
                     <span>By {ann.profiles?.full_name || 'Admin'}</span>
