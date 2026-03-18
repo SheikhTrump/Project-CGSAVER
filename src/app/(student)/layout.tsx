@@ -38,7 +38,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
        setIsLoggingOut(true);
        await supabase.auth.signOut();
        // Use window.location.href for a full refresh to clear server-side session
-       window.location.href = "/login";
+       window.location.href = "/"; // Redirect to home or login page after logout
      } catch (error) {
        console.error("Logout error:", error);
        window.location.href = "/login"; // Force redirect anyway
