@@ -33,12 +33,12 @@ const config: Config = {
         warning: '#F59E0B',
         danger: '#EF4444',
         info: '#3B82F6',
-        card: "rgb(var(--card))",
+        card: "var(--card)",
         primary: {
-          DEFAULT: "rgb(var(--primary))",
-          foreground: "rgb(var(--primary-foreground))",
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
         },
-        foreground: "rgb(var(--foreground))",
+        foreground: "var(--foreground)",
       },
       borderRadius: {
         card: '12px',
