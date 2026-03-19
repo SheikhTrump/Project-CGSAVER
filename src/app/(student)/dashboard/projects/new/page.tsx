@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -18,6 +18,7 @@ export default function NewProjectPage() {
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -26,6 +27,23 @@ export default function NewProjectPage() {
     budgetRange: "",
     deadline: "",
   });
+
+  useEffect(() => {
+    async function checkStatus() {
+      const { data } = await supabase
+        .from("system_config")
+        .select("value")
+        .eq("key", "platform_settings")
+        .single();
+      
+      if (data) {
+        setIsAllowed(data.value.allow_new_projects);
+      } else {
+        setIsAllowed(true); // Default to true if not found
+      }
+    }
+    checkStatus();
+  }, []);
   
   const [files, setFiles] = useState<File[]>([]);
 
@@ -142,13 +160,25 @@ export default function NewProjectPage() {
         <p className="text-text-secondary mt-1">Provide the details and requirements for your software project.</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Card className="shadow-sm border-border">
-          <CardHeader>
-            <CardTitle>Project Details</CardTitle>
-            <CardDescription>Fill in the core information about what you need built.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+      {isAllowed === false && (
+        <div className="p-8 text-center bg-orange-50 border border-orange-200 rounded-md">
+          <XCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-orange-900">Submissions Paused</h2>
+          <p className="text-orange-700 mt-2">We are currently not accepting new project submissions. Please check back later or contact support if you have an urgent request.</p>
+          <Button variant="outline" className="mt-6" onClick={() => router.push('/dashboard')}>
+            Return to Dashboard
+          </Button>
+        </div>
+      )}
+
+      {(isAllowed === true || isAllowed === null) &&
+        <form onSubmit={handleSubmit}>
+          <Card className="shadow-sm border-border">
+            <CardHeader>
+              <CardTitle>Project Details</CardTitle>
+              <CardDescription>Fill in the core information about what you need built.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
             
             <div className="space-y-2">
               <Label htmlFor="title" className="text-text-primary">Project Title <span className="text-danger">*</span></Label>
@@ -251,6 +281,7 @@ export default function NewProjectPage() {
           </CardFooter>
         </Card>
       </form>
+      }
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
@@ -18,6 +18,22 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
   const [paymentMethod, setPaymentMethod] = useState("bkash");
   const [trxId, setTrxId] = useState("");
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
+  const [paymentConfig, setPaymentConfig] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchConfig() {
+      const { data } = await supabase
+        .from("system_config")
+        .select("value")
+        .eq("key", "payment_methods")
+        .single();
+      
+      if (data) {
+        setPaymentConfig(data.value);
+      }
+    }
+    fetchConfig();
+  }, []);
 
   const handleQuoteAction = async (action: "accept" | "reject", quoteId: string) => {
     setLoading(true);
@@ -233,9 +249,35 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
               ) : (
                 <form onSubmit={handleSubmitPayment} className="space-y-4">
                   <div className="bg-white p-3 rounded-md border border-orange-200 text-sm text-orange-800 space-y-1">
-                    <p className="font-semibold">bKash / Nagad Account:</p>
-                    <p className="text-lg font-mono tracking-wider">017XXXXXXXX</p>
-                    <p className="text-xs opacity-80">(Send Money or Payment)</p>
+                    <p className="font-semibold">Payment Details:</p>
+                    {paymentConfig ? (
+                      <div className="space-y-2">
+                        {paymentConfig.bkash && (
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">bKash:</span>
+                            <span className="font-mono bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{paymentConfig.bkash}</span>
+                          </div>
+                        )}
+                        {paymentConfig.nagad && (
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">Nagad:</span>
+                            <span className="font-mono bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{paymentConfig.nagad}</span>
+                          </div>
+                        )}
+                        {paymentConfig.bank && (
+                          <div className="pt-1 mt-1 border-t border-orange-100">
+                            <p className="text-[10px] uppercase font-bold opacity-60">Bank Transfer:</p>
+                            <p className="text-xs">{paymentConfig.bank}</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-orange-400">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span className="text-xs">Loading payment details...</span>
+                      </div>
+                    )}
+                    <p className="text-[10px] opacity-80 mt-2 text-center">(Send Money or Payment)</p>
                   </div>
                   
                   <div className="space-y-2">
