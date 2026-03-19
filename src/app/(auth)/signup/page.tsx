@@ -44,6 +44,18 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     
+    // Password strength validation
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      setLoading(false);
+      return;
+    }
+    if (!/[a-zA-Z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
+      alert("Password must contain at least one letter and one number.");
+      setLoading(false);
+      return;
+    }
+
     // 1. Sign up user with metadata for the trigger to pick up
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
@@ -114,7 +126,8 @@ export default function SignupPage() {
             
             <div className="space-y-2">
               <Label htmlFor="password" className="text-text-primary">Password</Label>
-              <Input id="password" type="password" required value={formData.password} onChange={handleChange} className="rounded-btn" />
+              <Input id="password" type="password" required minLength={8} value={formData.password} onChange={handleChange} className="rounded-btn" />
+              <p className="text-xs text-text-muted">Min 8 characters with at least one letter and one number.</p>
             </div>
             
 

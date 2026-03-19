@@ -26,7 +26,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
 
   const handleSendQuote = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sending quote for project:", project.id);
+
     setLoading(true);
     try {
       // 1. Create quote
@@ -41,12 +41,12 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
       });
 
       if (quoteError) throw quoteError;
-      console.log("Quote inserted successfully");
+
 
       // 2. Update project status
       const { error: projectError } = await supabase.from("projects").update({ status: "quoted" }).eq("id", project.id);
       if (projectError) throw projectError;
-      console.log("Project status updated to quoted");
+
       
       alert("Quote sent successfully!");
       router.refresh();
@@ -93,7 +93,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
         link: `/dashboard/projects/${project.id}`,
         type: "status_update"
       });
-      console.log("Student notified of status override");
+
       
       alert("Project status updated successfully.");
       router.refresh();

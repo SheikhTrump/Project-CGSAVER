@@ -56,7 +56,15 @@ export default function NewProjectPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(prev => [...prev, ...Array.from(e.target.files as FileList)]);
+      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+      const validFiles = Array.from(e.target.files).filter(f => {
+        if (f.size > MAX_SIZE) {
+          alert(`File "${f.name}" exceeds the 10MB size limit and was skipped.`);
+          return false;
+        }
+        return true;
+      });
+      setFiles(prev => [...prev, ...validFiles]);
     }
   };
 
@@ -66,7 +74,7 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submit clicked. User:", user?.id);
+
     
     if (!user) {
       setErrorMsg("You must be logged in to submit a project.");
@@ -75,7 +83,7 @@ export default function NewProjectPage() {
     
     setLoading(true);
     setErrorMsg("");
-    console.log("Form data:", formData);
+
 
     try {
       // 1. Insert Project

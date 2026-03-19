@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,13 @@ export default async function AdminProjectsPage({
   searchParams: { query?: string; status?: string };
 }) {
   const supabase = createClient();
+
+  // Defense-in-depth: verify admin role server-side
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return notFound();
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (!profile || !['admin', 'superadmin'].includes(profile.role)) return notFound();
+
   const query = searchParams.query || "";
   const statusFilter = searchParams.status || "all";
 

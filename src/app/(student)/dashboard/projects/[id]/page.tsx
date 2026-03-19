@@ -8,6 +8,7 @@ import { CalendarDays, Code, Tag } from "lucide-react";
 import ProjectOverviewTab from "./OverviewTab";
 import ProjectMessagesTab from "./MessagesTab";
 import ProjectFilesTab from "./FilesTab";
+import PaymentTab from "./PaymentTab";
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
@@ -92,6 +93,12 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           >
             Files ({project.project_files?.length || 0})
           </TabsTrigger>
+          <TabsTrigger 
+            value="payment" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 py-3"
+          >
+            Payment
+          </TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
@@ -105,6 +112,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           
           <TabsContent value="files" className="m-0">
             <ProjectFilesTab files={project.project_files || []} />
+          </TabsContent>
+
+          <TabsContent value="payment" className="m-0">
+            <PaymentTab project={project} userId={user.id} />
           </TabsContent>
         </div>
       </Tabs>

@@ -37,7 +37,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
   const handleQuoteAction = async (action: "accept" | "reject", quoteId: string) => {
     setLoading(true);
-    console.log(`${action}ing quote ${quoteId} for project ${project.id}`);
+
     try {
       const newStatus = action === "accept" ? "payment_pending" : "submitted";
       
@@ -63,7 +63,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
     e.preventDefault();
     if (!trxId) return;
     setLoading(true);
-    console.log("Submitting payment for project:", project.id);
+
 
     try {
       let uploadUrl = null;
@@ -104,7 +104,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
   const handleDeliveryAction = async (action: "complete" | "revision") => {
     setLoading(true);
-    console.log(`Action: ${action} for project ${project.id}`);
+
     try {
       const newStatus = action === "complete" ? "completed" : "revision_requested";
       const { error } = await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
@@ -119,7 +119,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
           link: `/admin/projects/${project.id}`,
           type: "revision_request"
         });
-        console.log("Admins notified of revision request");
+
       }
       
       alert(`Project ${action === "complete" ? "accepted" : "revision request sent"} successfully.`);

@@ -18,7 +18,15 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setDeliverables(Array.from(e.target.files));
+      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+      const validFiles = Array.from(e.target.files).filter(f => {
+        if (f.size > MAX_SIZE) {
+          alert(`File "${f.name}" exceeds the 10MB size limit and was skipped.`);
+          return false;
+        }
+        return true;
+      });
+      setDeliverables(validFiles);
     }
   };
 
@@ -26,7 +34,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
     e.preventDefault();
     if (deliverables.length === 0) return;
     
-    console.log(`Starting delivery of ${deliverables.length} files for project:`, project.id);
+
     setLoading(true);
     setUploadProgress("");
 
@@ -35,7 +43,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
       for (const file of deliverables) {
         count++;
         setUploadProgress(`Uploading ${count} of ${deliverables.length}: ${file.name}...`);
-        console.log(`Uploading file ${count}/${deliverables.length}: ${file.name}`);
+
         
         const filePath = `${project.student_id}/${project.id}/deliverable_${Date.now()}_${file.name}`;
         
@@ -71,7 +79,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
           throw new Error(`Failed to save record for ${file.name}: ${insertError.message}`);
         }
         
-        console.log(`Successfully processed ${file.name}`);
+
       }
 
       // 3. Update project status if needed
@@ -82,7 +90,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
           console.error("Project status update error:", projectError);
           throw new Error(`Failed to update project status: ${projectError.message}`);
         }
-        console.log("Project status updated to delivered");
+
       }
 
       alert("Deliverables uploaded and delivered to student successfully!");
