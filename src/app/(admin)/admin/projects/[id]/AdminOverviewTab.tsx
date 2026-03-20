@@ -3,16 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, FileSignature, Edit3, Settings2 } from "lucide-react";
-import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
+import { Loader2, CheckCircle, XCircle, FileSignature, Settings2 } from "lucide-react";
+import { ProjectStatus } from "@/components/StatusBadge";
 import { sendNotification } from "@/utils/notifications";
 
-export default function AdminOverviewTab({ project, adminId }: { project: any, adminId: string }) {
+interface AdminProject {
+  id: string;
+  title: string;
+  status: string;
+  description: string;
+  student_id: string;
+  payments?: { id: string; amount: number; method: string; transaction_id: string; screenshot_url?: string; status: string }[];
+  quotes?: { id: string; price: number; currency: string; delivery_date?: string; status: string; created_at: string; scope_notes?: string }[];
+  project_files?: { id: string; file_url: string; file_name: string; file_type: string; created_at: string }[];
+}
+
+export default function AdminOverviewTab({ project, adminId }: { project: AdminProject, adminId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   
@@ -50,9 +61,9 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
       
       alert("Quote sent successfully!");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error sending quote:", err);
-      alert(`Failed to send quote: ${err.message || 'Unknown error'}`);
+      alert(`Failed to send quote: ${(err as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -71,9 +82,9 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
       
       alert(`Payment ${action === "confirmed" ? "approved" : "rejected"} successfully.`);
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Error in payment action (${action}):`, err);
-      alert(`Failed to verify payment: ${err.message || 'Unknown error'}`);
+      alert(`Failed to verify payment: ${(err as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -97,16 +108,16 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
       
       alert("Project status updated successfully.");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error updating status:", err);
-      alert(`Failed to update status: ${err.message || 'Unknown error'}`);
+      alert(`Failed to update status: ${(err as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const pendingPayments = project.payments?.filter((p: any) => p.status === "pending") || [];
-  const latestQuote = project.quotes?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+  const pendingPayments = project.payments?.filter((p: { status: string }) => p.status === "pending") || [];
+  const latestQuote = project.quotes?.sort((a: { created_at: string }, b: { created_at: string }) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -134,7 +145,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: any, a
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {pendingPayments.map((payment: any) => (
+              {pendingPayments.map((payment) => (
                 <div key={payment.id} className="bg-white p-4 rounded-md border border-orange-200 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                   <div>
                     <p className="font-semibold text-text-primary">

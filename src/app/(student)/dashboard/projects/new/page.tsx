@@ -24,7 +24,6 @@ export default function NewProjectPage() {
     title: "",
     description: "",
     techStack: "",
-    budgetRange: "",
     deadline: "",
   });
 
@@ -94,7 +93,6 @@ export default function NewProjectPage() {
           title: formData.title,
           description: formData.description,
           tech_stack: formData.techStack || null,
-          budget_range: formData.budgetRange || null,
           deadline: formData.deadline || null,
           status: "submitted",
         })
@@ -154,8 +152,8 @@ export default function NewProjectPage() {
 
       // 4. Redirect to project detail
       router.push(`/dashboard/projects/${project.id}`);
-    } catch (error: any) {
-      setErrorMsg(error.message || "An unexpected error occurred.");
+    } catch (error: unknown) {
+      setErrorMsg((error as Error).message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -205,15 +203,9 @@ export default function NewProjectPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="techStack" className="text-text-primary">Preferred Tech Stack (Optional)</Label>
-                <Input id="techStack" placeholder="e.g. React, Node.js, Python" value={formData.techStack} onChange={handleChange} className="bg-surface" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="budgetRange" className="text-text-primary">Budget Range (Optional)</Label>
-                <Input id="budgetRange" placeholder="e.g. 5,000 - 10,000 BDT" value={formData.budgetRange} onChange={handleChange} className="bg-surface" />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="techStack" className="text-text-primary">Preferred Tech Stack (Optional)</Label>
+              <Input id="techStack" placeholder="e.g. React, Node.js, Python" value={formData.techStack} onChange={handleChange} className="bg-surface" />
             </div>
 
             <div className="space-y-2">

@@ -18,9 +18,7 @@ export default function SystemSettingsPage() {
 
   // Settings state
   const [paymentMethods, setPaymentMethods] = useState({
-    bkash: "",
-    nagad: "",
-    bank: ""
+    bkash: ""
   });
   
   const [platformSettings, setPlatformSettings] = useState({
@@ -50,9 +48,9 @@ export default function SystemSettingsPage() {
           const ps = data.find(item => item.key === 'platform_settings');
           if (ps) setPlatformSettings(ps.value);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error fetching settings:", err);
-        setError(err.message || "Failed to load settings. Please check your permissions.");
+        setError((err as Error).message || "Failed to load settings. Please check your permissions.");
       } finally {
         setLoading(false);
       }
@@ -78,9 +76,9 @@ export default function SystemSettingsPage() {
       if (error) throw error;
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error saving payment methods:", err);
-      setError(err.message || "Failed to save settings");
+      setError((err as Error).message || "Failed to save settings");
     } finally {
       setSaving(false);
     }
@@ -103,9 +101,9 @@ export default function SystemSettingsPage() {
       if (error) throw error;
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error saving platform settings:", err);
-      setError(err.message || "Failed to save settings");
+      setError((err as Error).message || "Failed to save settings");
     } finally {
       setSaving(false);
     }
@@ -155,7 +153,7 @@ export default function SystemSettingsPage() {
         <Card className="shadow-sm border-border">
           <CardHeader>
             <CardTitle>Payment Accounts</CardTitle>
-            <CardDescription>Configure the phone numbers and bank details displayed to students during payment.</CardDescription>
+            <CardDescription>Configure the bKash number displayed to students during payment.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-white">
             <div className="space-y-2">
@@ -168,30 +166,10 @@ export default function SystemSettingsPage() {
                 className="bg-surface-2"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="nagad">Nagad Number</Label>
-              <Input 
-                id="nagad" 
-                value={paymentMethods.nagad} 
-                onChange={(e) => setPaymentMethods({...paymentMethods, nagad: e.target.value})}
-                placeholder="e.g. 017XXXXXXXX"
-                className="bg-surface-2"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bank">Bank Details</Label>
-              <Input 
-                id="bank" 
-                value={paymentMethods.bank} 
-                onChange={(e) => setPaymentMethods({...paymentMethods, bank: e.target.value})}
-                placeholder="Bank Name, Account Number, Branch"
-                className="bg-surface-2"
-              />
-            </div>
           </CardContent>
           <CardFooter className="border-t border-border pt-4">
             <Button 
-              className="bg-danger hover:bg-danger/90 text-white rounded-pill" 
+              className="bg-accent hover:bg-accent-hover text-white rounded-pill" 
               onClick={handleSavePaymentMethods}
               disabled={saving}
             >
@@ -217,7 +195,7 @@ export default function SystemSettingsPage() {
                 type="checkbox" 
                 checked={platformSettings.allow_new_projects} 
                 onChange={(e) => setPlatformSettings({...platformSettings, allow_new_projects: e.target.checked})}
-                className="h-5 w-5 rounded border-border text-danger focus:ring-danger"
+                className="h-5 w-5 rounded border-border text-accent focus:ring-accent"
               />
             </div>
 
@@ -230,13 +208,13 @@ export default function SystemSettingsPage() {
                 type="checkbox" 
                 checked={platformSettings.maintenance_mode} 
                 onChange={(e) => setPlatformSettings({...platformSettings, maintenance_mode: e.target.checked})}
-                className="h-5 w-5 rounded border-border text-danger focus:ring-danger"
+                className="h-5 w-5 rounded border-border text-accent focus:ring-accent"
               />
             </div>
           </CardContent>
           <CardFooter className="border-t border-border pt-4">
             <Button 
-              className="bg-danger hover:bg-danger/90 text-white rounded-pill" 
+              className="bg-accent hover:bg-accent-hover text-white rounded-pill" 
               onClick={handleSavePlatformSettings}
               disabled={saving}
             >

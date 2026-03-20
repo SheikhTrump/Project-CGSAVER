@@ -11,7 +11,7 @@ export const sendEmailNotification = async (
   to: string,
   subject: string,
   templateName: "welcome" | "project_submitted" | "quote_received" | "payment_confirmed" | "project_delivered" | "new_message",
-  data: any
+  data: { name?: string; title?: string; price?: number }
 ) => {
   // Determine text body based on template (in real app, use React Email templates)
   let body = "";

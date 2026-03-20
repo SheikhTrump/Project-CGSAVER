@@ -49,9 +49,9 @@ export function ProfileForm({ initialProfile }: { initialProfile: Profile }) {
       setSuccess(true);
       // Optional: window.location.reload() to sync other UI parts like headers
       // But we can just use the local state for now
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Profile update error:", err);
-      setError(err.message || "Failed to update profile");
+      setError((err as Error).message || "Failed to update profile");
     } finally {
       setLoading(false);
     }

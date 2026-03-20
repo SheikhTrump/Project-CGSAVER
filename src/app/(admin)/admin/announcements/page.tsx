@@ -10,13 +10,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Megaphone, Trash2, Loader2, AlertTriangle, Pin } from "lucide-react";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
+
+interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  is_urgent: boolean;
+  is_pinned: boolean;
+  created_at: string;
+  profiles?: { full_name: string };
+}
 
 export default function AdminAnnouncementsPage() {
   const { user, isSuperAdmin } = useAuth();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -53,7 +61,7 @@ export default function AdminAnnouncementsPage() {
       
       setFormData({ title: "", content: "", is_urgent: false, is_pinned: false });
       await fetchAnnouncements();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       alert("Failed to publish announcement");
     } finally {
@@ -66,7 +74,7 @@ export default function AdminAnnouncementsPage() {
     try {
       await supabase.from("announcements").delete().eq("id", id);
       setAnnouncements(prev => prev.filter(a => a.id !== id));
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
   };

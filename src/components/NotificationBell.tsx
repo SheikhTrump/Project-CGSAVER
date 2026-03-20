@@ -16,10 +16,21 @@ import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
+interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  link: string | null;
+  type: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 export function NotificationBell() {
   const { user } = useAuth();
   const router = useRouter();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch initial notifications
@@ -55,9 +66,9 @@ export function NotificationBell() {
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            setNotifications(prev => [payload.new, ...prev]);
+            setNotifications(prev => [payload.new as Notification, ...prev]);
           } else if (payload.eventType === "UPDATE") {
-             setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new : n));
+             setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new as Notification : n));
           }
         }
       )
@@ -81,7 +92,7 @@ export function NotificationBell() {
       .eq("is_read", false);
   };
 
-  const markAsReadAndNavigate = async (notification: any) => {
+  const markAsReadAndNavigate = async (notification: Notification) => {
     if (!notification.is_read) {
       // Optimistic
       setNotifications(prev => prev.map(n => n.id === notification.id ? {...n, is_read: true} : n));

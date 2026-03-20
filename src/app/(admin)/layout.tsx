@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -10,7 +10,8 @@ import {
   Megaphone,
   LogOut, 
   Menu,
-  ShieldAlert
+  ShieldAlert,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -27,7 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User as UserIcon, LogOut as LogOutIcon, ShieldCheck } from "lucide-react";
+import { User as UserIcon, LogOut as LogOutIcon } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -35,11 +36,11 @@ const navItems = [
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
+  { href: "/admin/showcase", label: "Showcase", icon: Sparkles },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { profile, user, isSuperAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

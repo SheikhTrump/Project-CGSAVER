@@ -10,7 +10,22 @@ import { Label } from "@/components/ui/label";
 import { FileCode2, FileText, Download, UploadCloud, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
-export default function AdminFilesTab({ project, adminId }: { project: any, adminId: string }) {
+interface ProjectFile {
+  id: string;
+  file_url: string;
+  file_name: string;
+  file_type: string;
+  created_at: string;
+}
+
+interface AdminProject {
+  id: string;
+  student_id: string;
+  status: string;
+  project_files?: ProjectFile[];
+}
+
+export default function AdminFilesTab({ project, adminId }: { project: AdminProject, adminId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [deliverables, setDeliverables] = useState<File[]>([]);
@@ -97,17 +112,17 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
       setDeliverables([]);
       router.refresh();
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Upload deliverables error:", error);
-      alert(error.message || "An unexpected error occurred during upload.");
+      alert((error as Error).message || "An unexpected error occurred during upload.");
     } finally {
       setLoading(false);
       setUploadProgress("");
     }
   };
 
-  const requirementsList = project.project_files?.filter((f: any) => f.file_type === "requirement") || [];
-  const deliverablesList = project.project_files?.filter((f: any) => f.file_type === "deliverable") || [];
+  const requirementsList = project.project_files?.filter((f) => f.file_type === "requirement") || [];
+  const deliverablesList = project.project_files?.filter((f) => f.file_type === "deliverable") || [];
 
   return (
     <div className="space-y-6">
@@ -124,7 +139,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
             <p className="text-sm text-text-muted italic">No requirement files uploaded.</p>
           ) : (
              <ul className="divide-y divide-border border border-border rounded-md overflow-hidden bg-surface">
-             {requirementsList.map((file: any) => (
+             {requirementsList.map((file) => (
                <li key={file.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-surface-2 transition-colors gap-3">
                  <div className="flex items-center gap-3 overflow-hidden">
                    <FileText className="h-6 w-6 text-text-muted shrink-0" />
@@ -156,7 +171,7 @@ export default function AdminFilesTab({ project, adminId }: { project: any, admi
           {/* Deliverables List */}
           {deliverablesList.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {deliverablesList.map((file: any) => (
+              {deliverablesList.map((file) => (
                 <div key={file.id} className="flex items-center justify-between p-3 border border-info/30 rounded-md bg-white">
                   <div className="truncate pr-2">
                     <p className="text-sm font-medium text-text-primary truncate" title={file.file_name}>{file.file_name}</p>

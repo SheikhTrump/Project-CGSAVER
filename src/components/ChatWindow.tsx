@@ -44,7 +44,7 @@ export function ChatWindow({
         .order("created_at", { ascending: true });
 
       if (!error && data) {
-        setMessages(data as any);
+        setMessages(data as Message[]);
       }
       setLoading(false);
       scrollToBottom();

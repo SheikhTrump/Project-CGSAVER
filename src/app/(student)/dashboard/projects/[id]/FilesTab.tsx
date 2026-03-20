@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import { FileCode2, FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 
-export default function ProjectFilesTab({ files }: { files: any[] }) {
+interface ProjectFile {
+  id: string;
+  file_url: string;
+  file_name: string;
+  file_type: string;
+  created_at: string;
+}
+
+export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
   const requirements = files.filter(f => f.file_type === "requirement");
   const deliverables = files.filter(f => f.file_type === "deliverable");
 

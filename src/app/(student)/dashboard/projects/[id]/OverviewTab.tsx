@@ -10,15 +10,26 @@ import { Label } from "@/components/ui/label";
 import { Loader2, AlertTriangle, FileCheck2, CheckCircle, CreditCard, XCircle } from "lucide-react";
 import { notifyAdmins } from "@/utils/notifications";
 
-export default function ProjectOverviewTab({ project }: { project: any }) {
+interface ProjectProps {
+  id: string;
+  title: string;
+  status: string;
+  description: string;
+  student_id: string;
+  quotes?: { id: string; price: number; currency: string; delivery_date?: string; status: string; scope_notes?: string }[];
+  payments?: { id: string; amount: number; method: string; transaction_id: string; screenshot_url?: string; status: string; created_at: string }[];
+  project_files?: { id: string; file_url: string; file_name: string; file_type: string }[];
+}
+
+export default function ProjectOverviewTab({ project }: { project: ProjectProps }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
+
   // Payment state
-  const [paymentMethod, setPaymentMethod] = useState("bkash");
+  const [paymentMethod] = useState("bkash");
   const [trxId, setTrxId] = useState("");
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
-  const [paymentConfig, setPaymentConfig] = useState<any>(null);
+  const [paymentConfig, setPaymentConfig] = useState<{ bkash?: string } | null>(null);
 
   useEffect(() => {
     async function fetchConfig() {
@@ -27,7 +38,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
         .select("value")
         .eq("key", "payment_methods")
         .single();
-      
+
       if (data) {
         setPaymentConfig(data.value);
       }
@@ -40,20 +51,20 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
     try {
       const newStatus = action === "accept" ? "payment_pending" : "submitted";
-      
+
       // 1. Update Quote
       const { error: quoteError } = await supabase.from("quotes").update({ status: action === "accept" ? "accepted" : "rejected" }).eq("id", quoteId);
       if (quoteError) throw quoteError;
-      
+
       // 2. Update Project Status
       const { error: projectError } = await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
       if (projectError) throw projectError;
-      
+
       alert(`Quote ${action === "accept" ? "accepted" : "declined"} successfully.`);
       router.refresh();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(`Error ${action}ing quote:`, e);
-      alert(`Failed to perform action: ${e.message || 'Unknown error'}`);
+      alert(`Failed to perform action: ${(e as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -70,9 +81,9 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
       if (paymentFile) {
         const filePath = `${project.student_id}/${project.id}/payment_${Date.now()}_${paymentFile.name}`;
         const { data: uploadData, error: uploadError } = await supabase.storage.from("project_files").upload(filePath, paymentFile);
-        
+
         if (uploadError) throw uploadError;
-        
+
         if (uploadData) {
           const { data } = supabase.storage.from("project_files").getPublicUrl(uploadData.path);
           uploadUrl = data.publicUrl;
@@ -80,7 +91,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
       }
 
       // 1. Record payment
-      const quote = project.quotes?.find((q: any) => q.status === "accepted");
+      const quote = project.quotes?.find((q: { status: string }) => q.status === "accepted");
       const { error: paymentError } = await supabase.from("payments").insert({
         project_id: project.id,
         amount: quote?.price || 0,
@@ -94,9 +105,9 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
       alert("Payment details submitted successfully. An Admin will verify it shortly.");
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Payment submission error:", error);
-      alert(`Failed to submit payment: ${error.message || 'Unknown error'}`);
+      alert(`Failed to submit payment: ${(error as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -108,9 +119,9 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
     try {
       const newStatus = action === "complete" ? "completed" : "revision_requested";
       const { error } = await supabase.from("projects").update({ status: newStatus }).eq("id", project.id);
-      
+
       if (error) throw error;
-      
+
       // Notify admins of revision request
       if (action === "revision") {
         await notifyAdmins({
@@ -121,25 +132,25 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
         });
 
       }
-      
+
       alert(`Project ${action === "complete" ? "accepted" : "revision request sent"} successfully.`);
       router.refresh();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(`Error during ${action} action:`, e);
-      alert(`Failed to perform action: ${e.message || 'Unknown error'}`);
+      alert(`Failed to perform action: ${(e as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
   };
 
   // Find active quote
-  const pendingQuote = project.quotes?.find((q: any) => q.status === "pending");
-  const acceptedQuote = project.quotes?.find((q: any) => q.status === "accepted");
-  const latestPayment = project.payments?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+  const pendingQuote = project.quotes?.find((q: { status: string }) => q.status === "pending");
+  const acceptedQuote = project.quotes?.find((q: { status: string }) => q.status === "accepted");
+  const latestPayment = project.payments?.sort((a: { created_at: string }, b: { created_at: string }) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
+
       {/* Left Column: Details */}
       <div className="lg:col-span-2 space-y-6">
         <Card className="shadow-sm border-border">
@@ -154,7 +165,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
         </Card>
 
         {/* Deliverables Section (Only show if there are deliverables) */}
-        {project.project_files?.some((f: any) => f.file_type === "deliverable") && (
+        {project.project_files?.some((f: { file_type: string }) => f.file_type === "deliverable") && (
           <Card className="shadow-sm border-info/20 bg-blue-50/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-info">
@@ -164,7 +175,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {project.project_files.filter((f: any) => f.file_type === "deliverable").map((file: any) => (
+                {project.project_files?.filter((f) => f.file_type === "deliverable").map((file) => (
                   <li key={file.id} className="flex items-center justify-between p-3 bg-surface border border-info/30 rounded-md">
                     <span className="text-sm font-medium text-text-primary">{file.file_name}</span>
                     <Button variant="outline" size="sm" asChild className="text-info border-info hover:bg-info hover:text-white">
@@ -180,7 +191,7 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
 
       {/* Right Column: Actions & Context */}
       <div className="space-y-6">
-        
+
         {/* Quote Action Card */}
         {project.status === "quoted" && pendingQuote && (
           <Card className="shadow-md border-purple-200 bg-purple-50/50">
@@ -202,21 +213,21 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
               )}
               {pendingQuote.scope_notes && (
                 <div className="bg-white p-3 rounded text-sm text-left text-purple-800 shadow-sm border border-purple-100 italic">
-                  "{pendingQuote.scope_notes}"
+                  &quot;{pendingQuote.scope_notes}&quot;
                 </div>
               )}
             </CardContent>
             <CardFooter className="flex flex-col gap-2 pt-4">
-              <Button 
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-pill" 
+              <Button
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-pill"
                 onClick={() => handleQuoteAction('accept', pendingQuote.id)}
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Accept & Proceed to Payment
               </Button>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full text-purple-600 hover:bg-purple-100 rounded-pill"
                 onClick={() => handleQuoteAction('reject', pendingQuote.id)}
                 disabled={loading}
@@ -258,18 +269,6 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
                             <span className="font-mono bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{paymentConfig.bkash}</span>
                           </div>
                         )}
-                        {paymentConfig.nagad && (
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium">Nagad:</span>
-                            <span className="font-mono bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{paymentConfig.nagad}</span>
-                          </div>
-                        )}
-                        {paymentConfig.bank && (
-                          <div className="pt-1 mt-1 border-t border-orange-100">
-                            <p className="text-[10px] uppercase font-bold opacity-60">Bank Transfer:</p>
-                            <p className="text-xs">{paymentConfig.bank}</p>
-                          </div>
-                        )}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 text-orange-400">
@@ -277,21 +276,12 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
                         <span className="text-xs">Loading payment details...</span>
                       </div>
                     )}
-                    <p className="text-[10px] opacity-80 mt-2 text-center">(Send Money or Payment)</p>
+                    <p className="text-[10px] opacity-80 mt-2 text-center">(Send Money )</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="method" className="text-orange-900">Method</Label>
-                    <select 
-                      id="method" 
-                      className="flex h-10 w-full rounded-md border border-orange-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    >
-                      <option value="bkash">bKash</option>
-                      <option value="nagad">Nagad</option>
-                      <option value="bank">Bank Transfer</option>
-                    </select>
+                    <Input id="method" value="bKash" disabled className="bg-white border-orange-200" />
                   </div>
 
                   <div className="space-y-2">
@@ -321,16 +311,16 @@ export default function ProjectOverviewTab({ project }: { project: any }) {
               <CardDescription className="text-teal-700">Please review the deliverables.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button 
-                className="w-full bg-success hover:bg-emerald-600 text-white rounded-pill h-12 text-md" 
+              <Button
+                className="w-full bg-success hover:bg-emerald-600 text-white rounded-pill h-12 text-md"
                 onClick={() => handleDeliveryAction('complete')}
                 disabled={loading}
               >
                 {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
                 Accept & Mark Completed
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full text-danger border-red-200 hover:bg-red-50 hover:text-red-700 rounded-pill"
                 onClick={() => handleDeliveryAction('revision')}
                 disabled={loading}

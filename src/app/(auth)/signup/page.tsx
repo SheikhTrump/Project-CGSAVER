@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { ArrowLeft } from "lucide-react";
 
 export default function SignupPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -88,7 +86,7 @@ export default function SignupPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-text-primary">Check your email</CardTitle>
             <CardDescription className="text-text-secondary">
-              We've sent a verification link to {formData.email}. Please verify your email to continue.
+              We&apos;ve sent a verification link to {formData.email}. Please verify your email to continue.
             </CardDescription>
           </CardHeader>
           <CardFooter>

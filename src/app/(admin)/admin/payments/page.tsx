@@ -15,7 +15,7 @@ import {
   Loader2,
   Phone,
   ExternalLink,
-  Image,
+  Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -41,7 +41,7 @@ type Payment = {
 };
 
 export default function AdminPaymentsPage() {
-  const { isSuperAdmin, isAdmin, isLoading: authLoading } = useAuth();
+  const { isLoading: authLoading } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -83,9 +83,9 @@ export default function AdminPaymentsPage() {
       if (projError) throw projError;
 
       await fetchPayments();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error confirming payment:", err);
-      alert("Failed to confirm payment: " + (err.message || "Unknown error"));
+      alert("Failed to confirm payment: " + ((err as Error).message || "Unknown error"));
     } finally {
       setActionLoading(null);
     }
@@ -106,9 +106,9 @@ export default function AdminPaymentsPage() {
       setShowRejectInput(null);
       setRejectNote((prev) => ({ ...prev, [paymentId]: "" }));
       await fetchPayments();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error rejecting payment:", err);
-      alert("Failed to reject payment: " + (err.message || "Unknown error"));
+      alert("Failed to reject payment: " + ((err as Error).message || "Unknown error"));
     } finally {
       setActionLoading(null);
     }
@@ -202,7 +202,7 @@ export default function AdminPaymentsPage() {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-accent hover:underline"
                           >
-                            <Image className="h-3 w-3" />
+                            <ImageIcon className="h-3 w-3" />
                             Screenshot
                             <ExternalLink className="h-2.5 w-2.5" />
                           </a>

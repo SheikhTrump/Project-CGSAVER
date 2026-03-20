@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
-import { CalendarDays, Code, Tag } from "lucide-react";
+import { CalendarDays, Code } from "lucide-react";
 // Sub-components that we will build next
 import ProjectOverviewTab from "./OverviewTab";
 import ProjectMessagesTab from "./MessagesTab";
@@ -58,12 +58,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 </span>
               )}
               
-              {project.budget_range && (
-                <span className="flex items-center gap-1 bg-accent-light text-accent-hover px-2 py-0.5 rounded text-xs font-semibold">
-                  <Tag className="h-3 w-3" />
-                  {project.budget_range}
-                </span>
-              )}
+
             </div>
           </div>
           <div className="shrink-0 flex items-center justify-end">

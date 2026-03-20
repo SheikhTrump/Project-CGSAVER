@@ -1,28 +1,28 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Code2, LayoutTemplate, Star } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function ShowcasePage() {
   const supabase = createClient();
   
-  // Fetch featured projects with their reviews
-  const { data: showcaseProjects } = await supabase
-    .from("projects")
-    .select(`
-      id, title, description, tech_stack, showcase_image_url,
-      reviews (rating, comment)
-    `)
-    .eq("is_featured", true)
+  // Fetch manually curated showcase entries
+  const { data: showcaseEntries } = await supabase
+    .from("showcase_entries")
+    .select("*")
     .order("created_at", { ascending: false });
 
-  // Compute average rating if reviews exist
-  const getReviewData = (project: any) => {
-    if (!project.reviews || project.reviews.length === 0) return null;
-    // Assuming single review per project usually based on UI
-    const review = project.reviews[0];
-    return { rating: review.rating, comment: review.comment };
-  };
+  interface ShowcaseProject {
+    id: string;
+    title: string;
+    description: string;
+    tech_stack: string | null;
+    image_url: string | null;
+    live_link: string | null;
+  }
+
+  /* getReviewData removed as showcase is now manually managed */
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-text-primary">
@@ -54,7 +54,7 @@ export default async function ShowcasePage() {
             </p>
           </div>
 
-          {!showcaseProjects || showcaseProjects.length === 0 ? (
+          {!showcaseEntries || showcaseEntries.length === 0 ? (
             <div className="text-center py-20 bg-surface-2/30 rounded-card border border-border border-dashed">
               <LayoutTemplate className="h-16 w-16 mx-auto text-text-muted opacity-30 mb-4" />
               <h3 className="text-xl font-bold text-text-primary">Showcase is currently empty</h3>
@@ -62,17 +62,18 @@ export default async function ShowcasePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {showcaseProjects.map((project: any) => {
-                const review = getReviewData(project);
+              {(showcaseEntries as unknown as ShowcaseProject[]).map((project) => {
                 
                 return (
-                  <div key={project.id} className="group bg-surface border border-border rounded-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-                    {/* Project Image Header */}
+                  <Link href={`/showcase/${project.id}`} key={project.id} className="group bg-surface border border-border rounded-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer">
                     <div className="h-56 bg-gradient-to-br from-sidebar-bg to-sidebar-hover flex items-center justify-center relative overflow-hidden">
-                      {project.showcase_image_url ? (
-                        <div 
-                          className="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-opacity"
-                          style={{ backgroundImage: `url(${project.showcase_image_url})` }}
+                      {project.image_url ? (
+                        <Image 
+                          src={project.image_url} 
+                          alt={project.title} 
+                          fill
+                          className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          unoptimized
                         />
                       ) : (
                         <Code2 className="h-20 w-20 text-white/10 group-hover:scale-110 transition-transform duration-500" />
@@ -92,19 +93,18 @@ export default async function ShowcasePage() {
                         {project.description}
                       </p>
                       
-                      {/* Review / Rating if exists */}
-                      {review && (
+                      {/* Live Link Button */}
+                      {project.live_link && (
                         <div className="mt-auto pt-4 border-t border-border/50">
-                          <div className="flex text-warning mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'fill-current' : 'text-text-muted/30'}`} />
-                            ))}
-                          </div>
-                          <p className="text-xs italic text-text-secondary line-clamp-2">"{review.comment}"</p>
+                          <Button asChild size="sm" variant="outline" className="w-full text-danger border-danger/20 hover:bg-danger hover:text-white transition-all group/btn">
+                            <a href={project.live_link} target="_blank" rel="noopener noreferrer">
+                              View Project <Star className="ml-2 h-3 w-3 fill-current group-hover/btn:scale-125 transition-transform" />
+                            </a>
+                          </Button>
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

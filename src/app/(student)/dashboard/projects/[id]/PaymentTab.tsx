@@ -3,21 +3,28 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, CreditCard, CheckCircle, XCircle, Clock, Phone, Hash, Upload } from "lucide-react";
 import { format } from "date-fns";
 
-export default function PaymentTab({ project, userId }: { project: any; userId: string }) {
+interface ProjectProps {
+  id: string;
+  status: string;
+  quotes?: { id: string; price: number; currency: string; status: string }[];
+  payments?: { id: string; amount: number; method: string; sender_number?: string; transaction_id: string; screenshot_url?: string; status: string; created_at: string; admin_note?: string }[];
+}
+
+export default function PaymentTab({ project, userId }: { project: ProjectProps; userId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [paymentConfig, setPaymentConfig] = useState<any>(null);
+  const [paymentConfig, setPaymentConfig] = useState<{ bkash?: string } | null>(null);
   const [configLoading, setConfigLoading] = useState(true);
 
   // Form state
-  const [paymentMethod, setPaymentMethod] = useState("bkash");
+  const [paymentMethod] = useState("bkash"); // setPaymentMethod removed as it was unused
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
@@ -36,11 +43,11 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
     fetchConfig();
   }, []);
 
-  const acceptedQuote = project.quotes?.find((q: any) => q.status === "accepted");
+  const acceptedQuote = project.quotes?.find((q: { status: string }) => q.status === "accepted");
   const payments = (project.payments || []).sort(
-    (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    (a: { created_at: string }, b: { created_at: string }) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
-  const hasPendingPayment = payments.some((p: any) => p.status === "pending");
+  const hasPendingPayment = payments.some((p: { status: string }) => p.status === "pending");
 
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,19 +91,15 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
       setTrxId("");
       setPaymentFile(null);
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Payment submission error:", error);
-      alert(`Failed to submit payment: ${error.message || "Unknown error"}`);
+      alert(`Failed to submit payment: ${(error as Error).message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const statusIcon = (status: string) => {
-    if (status === "confirmed") return <CheckCircle className="h-4 w-4 text-emerald-500" />;
-    if (status === "rejected") return <XCircle className="h-4 w-4 text-red-500" />;
-    return <Clock className="h-4 w-4 text-orange-500" />;
-  };
+  /* statusIcon removed as it was unused */
 
   const statusBadge = (status: string) => {
     if (status === "confirmed")
@@ -136,7 +139,7 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {payments.map((p: any) => (
+              {payments.map((p) => (
                 <div
                   key={p.id}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-surface-2/50 border border-border rounded-lg"
@@ -194,7 +197,7 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
             <Loader2 className="h-8 w-8 text-orange-400 animate-spin mx-auto" />
             <p className="font-medium text-orange-900">Payment Verification In Progress</p>
             <p className="text-sm text-orange-700">
-              Your latest payment is being reviewed by our team. You'll be notified once it's confirmed.
+              Your latest payment is being reviewed by our team. You&apos;ll be notified once it&apos;s confirmed.
             </p>
           </CardContent>
         </Card>
@@ -223,7 +226,7 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
             <form onSubmit={handleSubmitPayment} className="space-y-5">
               {/* Payment Account Info */}
               <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 text-sm text-emerald-900">
-                <p className="font-semibold mb-2">Send payment to:</p>
+                <p className="font-semibold mb-2">Send Money to:</p>
                 {configLoading ? (
                   <div className="flex items-center gap-2 text-emerald-500">
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -239,20 +242,6 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
                         </span>
                       </div>
                     )}
-                    {paymentConfig.nagad && (
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Nagad:</span>
-                        <span className="font-mono bg-white px-2.5 py-1 rounded border border-emerald-200 text-sm">
-                          {paymentConfig.nagad}
-                        </span>
-                      </div>
-                    )}
-                    {paymentConfig.bank && (
-                      <div className="pt-1.5 mt-1.5 border-t border-emerald-200">
-                        <p className="text-[10px] uppercase font-bold opacity-60">Bank Transfer</p>
-                        <p className="text-xs">{paymentConfig.bank}</p>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <p className="text-xs text-emerald-600">Payment details not configured yet.</p>
@@ -262,22 +251,13 @@ export default function PaymentTab({ project, userId }: { project: any; userId: 
               {/* Method */}
               <div className="space-y-2">
                 <Label htmlFor="method">Payment Method</Label>
-                <select
-                  id="method"
-                  className="flex h-10 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                >
-                  <option value="bkash">bKash</option>
-                  <option value="nagad">Nagad</option>
-                  <option value="bank">Bank Transfer</option>
-                </select>
+                <Input id="method" value="bKash" disabled className="bg-surface-2" />
               </div>
 
               {/* Sender Number */}
               <div className="space-y-2">
                 <Label htmlFor="senderNumber">
-                  Your {paymentMethod === "bank" ? "Account" : paymentMethod === "bkash" ? "bKash" : "Nagad"} Number
+                  Your bKash Number
                 </Label>
                 <Input
                   id="senderNumber"

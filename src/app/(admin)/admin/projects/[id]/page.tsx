@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
-import { CalendarDays, Code, Tag, User } from "lucide-react";
+import { CalendarDays, Code, User } from "lucide-react";
 import AdminOverviewTab from "./AdminOverviewTab";
 import AdminMessagesTab from "./AdminMessagesTab";
 import AdminFilesTab from "./AdminFilesTab";
@@ -65,12 +65,7 @@ export default async function AdminProjectDetailPage({ params }: { params: { id:
                 </span>
               )}
               
-              {project.budget_range && (
-                <span className="flex items-center gap-1 bg-accent-light text-accent-hover px-2 py-0.5 rounded text-xs font-semibold">
-                  <Tag className="h-3 w-3" />
-                  {project.budget_range}
-                </span>
-              )}
+
             </div>
           </div>
         </div>

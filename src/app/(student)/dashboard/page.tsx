@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import Link from "next/link";
@@ -47,7 +47,7 @@ export default async function DashboardHome() {
           <h1 className="text-3xl font-bold tracking-tight text-text-primary">
             Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}!
           </h1>
-          <p className="text-text-secondary mt-1">Here is what's happening with your projects today.</p>
+          <p className="text-text-secondary mt-1">Here is what&apos;s happening with your projects today.</p>
         </div>
         <Button asChild className="rounded-pill bg-accent hover:bg-accent-hover text-white shadow-sm">
           <Link href="/dashboard/projects/new">
@@ -136,7 +136,7 @@ export default async function DashboardHome() {
             <div className="p-8 text-center">
               <FolderKanban className="mx-auto h-12 w-12 text-text-muted opacity-50 mb-3" />
               <h3 className="text-lg font-medium text-text-primary">No projects yet</h3>
-              <p className="text-text-secondary mt-1 mb-4">You haven't submitted any projects yet.</p>
+              <p className="text-text-secondary mt-1 mb-4">You haven&apos;t submitted any projects yet.</p>
               <Button asChild className="rounded-pill bg-accent hover:bg-accent-hover text-white">
                 <Link href="/dashboard/projects/new">Create your first project</Link>
               </Button>

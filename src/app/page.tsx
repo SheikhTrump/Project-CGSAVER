@@ -44,7 +44,7 @@ export default async function LandingPage() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/20 via-background to-background"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold text-accent bg-accent/10 mb-8 border border-accent/20 animate-in slide-in-from-bottom flex-shrink duration-700">
-              <Rocket className="h-4 w-4 mr-2" /> Bangladesh's Elite Student Dev Agency
+              <Rocket className="h-4 w-4 mr-2" /> Bangladesh&apos;s Elite Student Dev Agency
             </div>
             <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-text-primary sm:text-7xl animate-in fade-in zoom-in duration-700 delay-150">
               Your software projects, built <span className="text-accent relative inline-block">faster<svg className="absolute -bottom-2 w-full h-3 text-accent" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="4" fill="transparent"/></svg></span> and better.
@@ -74,7 +74,7 @@ export default async function LandingPage() {
               {[
                 { icon: Zap, title: "Lightning Fast", desc: "Get your deliverables in record time. We prioritize speed without sacrificing quality." },
                 { icon: Code2, title: "Modern Tech Stacks", desc: "React, Next.js, Python, Flutter, Node.js - we build using enterprise-grade tooling." },
-                { icon: ShieldCheck, title: "Guaranteed Delivery", desc: "Pay securely via bKash/Nagad and get full source code ownership upon completion." }
+                { icon: ShieldCheck, title: "Guaranteed Delivery", desc: "Pay securely via bKash and get full source code ownership upon completion." }
               ].map((feature, i) => (
                 <div key={i} className="bg-surface border border-border rounded-card p-8 hover:border-accent/50 hover:shadow-md transition-all">
                   <div className="h-12 w-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6">
@@ -123,7 +123,7 @@ export default async function LandingPage() {
                 </Button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {featuredProjects.map((project: any) => (
+              {(featuredProjects as { id: string; title: string; description: string; tech_stack: string | null }[]).map((project) => (
                   <div key={project.id} className="group bg-surface border border-border rounded-card overflow-hidden hover:shadow-lg transition-all duration-300">
                     <div className="h-48 bg-sidebar-bg/5 flex items-center justify-center p-6 border-b border-border relative overflow-hidden">
                       <Code2 className="h-16 w-16 text-text-muted opacity-20 group-hover:scale-110 transition-transform duration-500" />

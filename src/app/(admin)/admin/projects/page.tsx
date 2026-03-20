@@ -7,7 +7,7 @@ import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import { StatusFilterSelect } from "@/components/StatusFilterSelect";
 import Link from "next/link";
 import { format } from "date-fns";
-import { FolderKanban, Search, Filter } from "lucide-react";
+import { FolderKanban, Search } from "lucide-react";
 
 export default async function AdminProjectsPage({
   searchParams,
@@ -21,6 +21,15 @@ export default async function AdminProjectsPage({
   if (!user) return notFound();
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   if (!profile || !['admin', 'superadmin'].includes(profile.role)) return notFound();
+
+  interface AdminProjectWithProfile {
+    id: string;
+    title: string;
+    status: string;
+    deadline: string | null;
+    created_at: string;
+    profiles: { full_name: string; email: string } | null;
+  }
 
   const query = searchParams.query || "";
   const statusFilter = searchParams.status || "all";
@@ -100,7 +109,7 @@ export default async function AdminProjectsPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border bg-surface">
-                {projects.map((project: any) => (
+                {(projects as unknown as AdminProjectWithProfile[]).map((project) => (
                   <tr key={project.id} className="hover:bg-surface-2/30 transition-colors">
                     <td className="px-6 py-4 font-medium text-text-primary max-w-[250px] truncate">
                       <Link href={`/admin/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors block" title={project.title}>

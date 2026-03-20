@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import Link from "next/link";
@@ -39,7 +39,7 @@ export default async function ProjectsListPage() {
             <FolderKanban className="mx-auto h-16 w-16 text-text-muted opacity-50 mb-4" />
             <h3 className="text-xl font-medium text-text-primary">No projects found</h3>
             <p className="text-text-secondary mt-2 mb-6 max-w-md mx-auto">
-              You haven't submitted any projects yet. Start by generating a requirement request.
+              You haven&apos;t submitted any projects yet. Start by generating a requirement request.
             </p>
             <Button asChild className="rounded-pill bg-accent hover:bg-accent-hover text-white px-8">
               <Link href="/dashboard/projects/new">Create Project</Link>

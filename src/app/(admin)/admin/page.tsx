@@ -16,6 +16,8 @@ export default async function AdminDashboardHome() {
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   if (!profile || !['admin', 'superadmin'].includes(profile.role)) return null;
 
+  /* MessageWithProfile removed as it was unused */
+
   // 1. Fetch Total Revenue
   const { data: payments } = await supabase
     .from("payments")
@@ -39,18 +41,28 @@ export default async function AdminDashboardHome() {
   // 4. Fetch Unread Messages (Count messages from students that are unread)
   const { data: unreadMessages } = await supabase
     .from("messages")
-    .select("sender_id, profiles!sender_id(role)")
+    .select("sender_id, profiles:sender_id(role)")
     .eq("is_read", false);
   
-  const unreadMessagesCount = unreadMessages?.filter(m => 
-    (m.profiles as any)?.role === 'student'
-  ).length || 0;
+  const unreadMessagesCount = (unreadMessages as { sender_id: string; profiles: unknown }[])?.filter(m => {
+    const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    return profile?.role === 'student';
+  }).length || 0;
   // 5. Fetch Recent Projects (with student profile info)
+  interface ProjectWithProfile {
+    id: string;
+    title: string;
+    status: string;
+    deadline: string | null;
+    created_at: string;
+    profiles: { full_name: string; email: string } | null;
+  }
+
   const { data: recentProjects } = await supabase
     .from("projects")
     .select(`
       id, title, status, deadline, created_at,
-      profiles!student_id ( full_name, email )
+      profiles:student_id ( full_name, email )
     `)
     .order("created_at", { ascending: false })
     .limit(5);
@@ -135,7 +147,7 @@ export default async function AdminDashboardHome() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border bg-surface">
-                  {recentProjects.map((project: any) => (
+                  {(recentProjects as unknown as ProjectWithProfile[]).map((project) => (
                     <tr key={project.id} className="hover:bg-surface-2/30 transition-colors">
                       <td className="px-6 py-4 font-medium text-text-primary max-w-[200px] truncate">
                         <Link href={`/admin/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors">
@@ -143,8 +155,12 @@ export default async function AdminDashboardHome() {
                         </Link>
                       </td>
                       <td className="px-6 py-4 text-text-secondary">
-                        <div className="font-medium text-text-primary">{project.profiles?.full_name}</div>
-                        <div className="text-xs text-text-muted">{project.profiles?.email}</div>
+                        <div className="font-medium text-text-primary">
+                          {Array.isArray(project.profiles) ? project.profiles[0]?.full_name : project.profiles?.full_name}
+                        </div>
+                        <div className="text-xs text-text-muted">
+                          {Array.isArray(project.profiles) ? project.profiles[0]?.email : project.profiles?.email}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <StatusBadge status={project.status as ProjectStatus} />
