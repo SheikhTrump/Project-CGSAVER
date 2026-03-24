@@ -1,11 +1,6 @@
-/**
- * Email Notification Service (Stub / Blueprint)
- * 
- * In a production environment with a configured Resend API key, you would:
- * 1. npm install resend @react-email/components
- * 2. Configure `const resend = new Resend(process.env.RESEND_API_KEY);`
- * 3. Replace the console.logs below with `resend.emails.send({...})`
- */
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmailNotification = async (
   to: string,
@@ -13,7 +8,7 @@ export const sendEmailNotification = async (
   templateName: "welcome" | "project_submitted" | "quote_received" | "payment_confirmed" | "project_delivered" | "new_message",
   data: { name?: string; title?: string; price?: number }
 ) => {
-  // Determine text body based on template (in real app, use React Email templates)
+  // Determine text body based on template
   let body = "";
   switch (templateName) {
     case "welcome":
@@ -36,13 +31,22 @@ export const sendEmailNotification = async (
       break;
   }
 
-  // MOCK LOGIC for development so we don't crash without API keys or domains
-  console.log("=====================================");
-  console.log("✉️  EMAIL DISPATCH (MOCK)");
-  console.log(`To: ${to}`);
-  console.log(`Subject: ${subject}`);
-  console.log(`Body: ${body}`);
-  console.log("=====================================");
+  try {
+    const { data: response, error } = await resend.emails.send({
+      from: 'CGSAVER <onboarding@resend.dev>', // Replace with your verified domain e.g. notifications@cgsaver.com
+      to: [to],
+      subject: subject,
+      text: body,
+    });
 
-  return { success: true, mocked: true };
+    if (error) {
+      console.error("Resend Error:", error);
+      return { success: false, error };
+    }
+
+    return { success: true, data: response };
+  } catch (err) {
+    console.error("Email Dispatch Failed:", err);
+    return { success: false, error: err };
+  }
 };
