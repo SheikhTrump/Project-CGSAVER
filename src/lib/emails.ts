@@ -1,6 +1,13 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configure the SMTP transporter for Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 export const sendEmailNotification = async (
   to: string,
@@ -32,19 +39,14 @@ export const sendEmailNotification = async (
   }
 
   try {
-    const { data: response, error } = await resend.emails.send({
-      from: 'CGSAVER <onboarding@resend.dev>', // Replace with your verified domain e.g. notifications@cgsaver.com
-      to: [to],
+    const info = await transporter.sendMail({
+      from: `"PROJECT CGSAVER" <${process.env.GMAIL_USER}>`,
+      to: to,
       subject: subject,
       text: body,
     });
 
-    if (error) {
-      console.error("Resend Error:", error);
-      return { success: false, error };
-    }
-
-    return { success: true, data: response };
+    return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error("Email Dispatch Failed:", err);
     return { success: false, error: err };
