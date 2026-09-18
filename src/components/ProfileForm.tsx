@@ -138,3 +138,5 @@ export function ProfileForm({ initialProfile }: { initialProfile: Profile }) {
     </Card>
   );
 }
+
+//Need to add profile animations here
