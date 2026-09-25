@@ -160,17 +160,16 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">Submit a New Project</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">Submit a New Project</h1>
         <p className="text-text-secondary mt-1">Provide the details and requirements for your software project.</p>
       </div>
 
       {isAllowed === false && (
-        <div className="p-8 text-center bg-orange-50 border border-orange-200 rounded-md">
-          <XCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-orange-900">Submissions Paused</h2>
-          <p className="text-orange-700 mt-2">We are currently not accepting new project submissions. Please check back later or contact support if you have an urgent request.</p>
+        <div className="p-8 text-center bg-surface-2 border border-border rounded-md">
+                    <h2 className="text-lg font-medium text-text-primary">Submissions paused</h2>
+          <p className="text-text-secondary mt-2">We are currently not accepting new project submissions. Please check back later or contact support if you have an urgent request.</p>
           <Button variant="outline" className="mt-6" onClick={() => router.push('/dashboard')}>
             Return to Dashboard
           </Button>
@@ -179,7 +178,7 @@ export default function NewProjectPage() {
 
       {(isAllowed === true || isAllowed === null) &&
         <form onSubmit={handleSubmit}>
-          <Card className="shadow-sm border-border">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Project Details</CardTitle>
               <CardDescription>Fill in the core information about what you need built.</CardDescription>

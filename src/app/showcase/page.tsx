@@ -1,117 +1,96 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Code2, LayoutTemplate, Star } from "lucide-react";
 import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
+import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+
+interface ShowcaseProject {
+  id: string;
+  title: string;
+  description: string;
+  tech_stack: string | null;
+  image_url: string | null;
+  live_link: string | null;
+}
 
 export default async function ShowcasePage() {
   const supabase = createClient();
-  
+
   // Fetch manually curated showcase entries
   const { data: showcaseEntries } = await supabase
     .from("showcase_entries")
     .select("*")
     .order("created_at", { ascending: false });
 
-  interface ShowcaseProject {
-    id: string;
-    title: string;
-    description: string;
-    tech_stack: string | null;
-    image_url: string | null;
-    live_link: string | null;
-  }
-
-  /* getReviewData removed as showcase is now manually managed */
+  const projects = (showcaseEntries ?? []) as unknown as ShowcaseProject[];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-text-primary">
-      
-      {/* Header */}
-      <header className="border-b border-border bg-surface sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Button variant="ghost" asChild className="text-text-secondary hover:text-text-primary pl-0">
-            <Link href="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Home</Link>
-          </Button>
-          <div className="font-bold tracking-tight text-text-primary flex items-center gap-2">
-            Showcase
-          </div>
-          <Button asChild size="sm" className="bg-accent hover:bg-accent-hover text-white rounded-pill">
-            <Link href="/signup">Start Your Project</Link>
-          </Button>
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col bg-background text-text-primary">
+      <SiteHeader />
 
-      <main className="flex-1 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h1 className="text-4xl font-extrabold tracking-tight text-text-primary sm:text-5xl mb-4">
-              Hall of Fame
-            </h1>
-            <p className="text-lg text-text-secondary">
-              A curated collection of top-tier academic and commercial software delivered by CGSAVER.
-            </p>
-          </div>
+      <main className="flex-1">
+        <div className="mx-auto max-w-5xl px-5 pb-24 pt-16 sm:px-8 sm:pt-20">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-text-muted">Showcase</p>
+          <h1 className="mt-4 text-4xl font-medium tracking-tightest sm:text-5xl">Selected work</h1>
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
+            Academic and commercial software delivered by the CGSAVER team.
+          </p>
 
-          {!showcaseEntries || showcaseEntries.length === 0 ? (
-            <div className="text-center py-20 bg-surface-2/30 rounded-card border border-border border-dashed">
-              <LayoutTemplate className="h-16 w-16 mx-auto text-text-muted opacity-30 mb-4" />
-              <h3 className="text-xl font-bold text-text-primary">Showcase is currently empty</h3>
-              <p className="text-text-secondary mt-2">Check back soon as we curate our best projects!</p>
+          {projects.length === 0 ? (
+            <div className="mt-16 border-t border-border pt-10">
+              <p className="font-medium">Nothing here yet.</p>
+              <p className="mt-1 text-text-secondary">We&apos;re putting together our best projects. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(showcaseEntries as unknown as ShowcaseProject[]).map((project) => {
-                
-                return (
-                  <Link href={`/showcase/${project.id}`} key={project.id} className="group bg-surface border border-border rounded-card overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer">
-                    <div className="h-56 bg-gradient-to-br from-sidebar-bg to-sidebar-hover flex items-center justify-center relative overflow-hidden">
+            <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2">
+              {projects.map((project) => (
+                <article key={project.id} className="group">
+                  <Link href={`/showcase/${project.id}`} className="block">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-card border border-border bg-surface-2">
                       {project.image_url ? (
-                        <Image 
-                          src={project.image_url} 
-                          alt={project.title} 
+                        <Image
+                          src={project.image_url}
+                          alt={project.title}
                           fill
-                          className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          className="object-cover transition-opacity duration-300 group-hover:opacity-90"
                           unoptimized
                         />
                       ) : (
-                        <Code2 className="h-20 w-20 text-white/10 group-hover:scale-110 transition-transform duration-500" />
-                      )}
-                      
-                      {project.tech_stack && (
-                        <span className="absolute top-4 right-4 bg-background/90 backdrop-blur text-xs font-semibold px-2.5 py-1 rounded text-text-primary border border-border shadow-sm">
-                          {project.tech_stack}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="font-bold text-xl text-text-primary mb-2 line-clamp-2">{project.title}</h3>
-                      <p className="text-text-secondary text-sm line-clamp-3 mb-6 flex-1">
-                        {project.description}
-                      </p>
-                      
-                      {/* Live Link Button */}
-                      {project.live_link && (
-                        <div className="mt-auto pt-4 border-t border-border/50">
-                          <Button asChild size="sm" variant="outline" className="w-full text-danger border-danger/20 hover:bg-danger hover:text-white transition-all group/btn">
-                            <a href={project.live_link} target="_blank" rel="noopener noreferrer">
-                              View Project <Star className="ml-2 h-3 w-3 fill-current group-hover/btn:scale-125 transition-transform" />
-                            </a>
-                          </Button>
+                        <div className="flex h-full items-end p-5">
+                          <span className="text-2xl font-medium tracking-tight text-text-muted/60">{project.title}</span>
                         </div>
                       )}
                     </div>
+                    <div className="mt-4 flex items-start justify-between gap-4">
+                      <h2 className="font-medium underline-offset-4 group-hover:underline">{project.title}</h2>
+                      {project.tech_stack && (
+                        <span className="shrink-0 pt-0.5 font-mono text-xs text-text-muted">
+                          {project.tech_stack.split(",")[0].trim()}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1.5 line-clamp-2 text-[15px] leading-relaxed text-text-secondary">
+                      {project.description}
+                    </p>
                   </Link>
-                );
-              })}
+                  {project.live_link && (
+                    <a
+                      href={project.live_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1 text-sm text-text-secondary transition-colors hover:text-text-primary"
+                    >
+                      Live site <ArrowUpRight className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </article>
+              ))}
             </div>
           )}
         </div>
       </main>
-      
+
+      <SiteFooter />
     </div>
   );
 }

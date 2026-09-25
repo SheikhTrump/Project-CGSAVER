@@ -82,7 +82,7 @@ export default function AdminAnnouncementsPage() {
   if (isSuperAdmin === false) {
     return (
       <div className="max-w-4xl mx-auto py-12 text-center text-text-secondary">
-        <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-warning" />
+        <AlertTriangle className="h-6 w-6 mx-auto mb-4 text-warning" />
         <h2 className="text-xl font-bold text-text-primary">Access Denied</h2>
         <p>Only Super Admins can manage global organization announcements.</p>
       </div>
@@ -90,19 +90,19 @@ export default function AdminAnnouncementsPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in duration-500">
+    <div className="space-y-8 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">Global Announcements</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">Global Announcements</h1>
         <p className="text-text-secondary mt-1">Broadcast important platform updates or alerts to all students.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Composer Form */}
-        <Card className="lg:col-span-1 shadow-sm border-border h-fit">
-          <CardHeader className="bg-sidebar-hover text-white rounded-t-card pb-4">
+        <Card className="lg:col-span-1 border-border h-fit">
+          <CardHeader className="border-b border-border pb-4">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Megaphone className="h-5 w-5 text-accent" />
+              <Megaphone className="h-4 w-4 text-text-muted" />
               New Broadcast
             </CardTitle>
           </CardHeader>
@@ -152,8 +152,8 @@ export default function AdminAnnouncementsPage() {
                 <div key={ann.id} className={`p-5 rounded-card border ${ann.is_urgent ? 'border-danger/30 bg-red-50' : 'border-border bg-surface'}`}>
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
-                      {ann.is_urgent && <span className="bg-danger text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Urgent</span>}
-                      {ann.is_pinned && <span className="bg-accent/10 border border-accent/20 text-accent text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1"><Pin className="h-3 w-3" /> Pinned</span>}
+                      {ann.is_urgent && <span className="border border-danger/30 text-danger text-xs px-1.5 py-0.5 rounded flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Urgent</span>}
+                      {ann.is_pinned && <span className="border border-border text-text-secondary text-xs px-1.5 py-0.5 rounded flex items-center gap-1"><Pin className="h-3 w-3" /> Pinned</span>}
                       <h4 className={`font-bold text-lg ${ann.is_urgent ? 'text-danger' : 'text-text-primary'}`}>{ann.title}</h4>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(ann.id)} className="h-8 w-8 text-text-muted hover:text-danger hover:bg-red-50 -mt-1 -mr-1">

@@ -20,7 +20,7 @@ export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
   return (
     <div className="space-y-6">
       
-      <Card className="shadow-sm border-border">
+      <Card className="border-border">
         <CardHeader className="border-b border-border/50 pb-4">
           <CardTitle className="flex items-center gap-2 text-text-primary text-lg">
             <FileCode2 className="h-5 w-5 text-accent" />
@@ -33,7 +33,7 @@ export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {deliverables.map(file => (
-                <div key={file.id} className="group relative overflow-hidden rounded-card border border-border bg-surface p-4 transition-all hover:border-accent hover:shadow-md">
+                <div key={file.id} className="group relative overflow-hidden rounded-card border border-border bg-surface p-4 transition-all hover:border-text-muted">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <p className="font-semibold text-text-primary text-sm line-clamp-2" title={file.file_name}>
@@ -44,7 +44,7 @@ export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
                       </p>
                     </div>
                   </div>
-                  <Button asChild size="sm" className="w-full mt-4 bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors">
+                  <Button asChild size="sm" className="w-full mt-4" variant="secondary">
                     <a href={file.file_url} target="_blank" rel="noopener noreferrer">
                       <Download className="mr-2 h-4 w-4" />
                       Download File
@@ -57,7 +57,7 @@ export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm border-border">
+      <Card className="border-border">
         <CardHeader className="border-b border-border/50 pb-4">
           <CardTitle className="flex items-center gap-2 text-text-primary text-lg">
             <FileText className="h-5 w-5 text-text-secondary" />
@@ -78,7 +78,7 @@ export default function ProjectFilesTab({ files }: { files: ProjectFile[] }) {
                      <p className="text-xs text-text-muted">{format(new Date(file.created_at), "MMM d, yyyy 'at' p")}</p>
                    </div>
                  </div>
-                 <Button variant="ghost" size="sm" asChild className="text-accent hover:bg-accent/10">
+                 <Button variant="ghost" size="sm" asChild className="text-text-primary">
                    <a href={file.file_url} target="_blank" rel="noopener noreferrer">Download</a>
                  </Button>
                </li>

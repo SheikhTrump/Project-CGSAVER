@@ -21,9 +21,9 @@ export default async function StudentProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary tracking-tight">Your Profile</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">Your Profile</h1>
         <p className="text-text-secondary mt-2">Manage your account information and preferences</p>
       </div>
 

@@ -7,7 +7,7 @@ import { StatusBadge, ProjectStatus } from "@/components/StatusBadge";
 import { StatusFilterSelect } from "@/components/StatusFilterSelect";
 import Link from "next/link";
 import { format } from "date-fns";
-import { FolderKanban, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 export default async function AdminProjectsPage({
   searchParams,
@@ -54,15 +54,15 @@ export default async function AdminProjectsPage({
   const { data: projects } = await dbQuery.limit(100);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-text-primary">All Projects</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-text-primary">All Projects</h1>
           <p className="text-text-secondary mt-1">Manage all student software requests in one place.</p>
         </div>
       </div>
 
-      <Card className="shadow-sm border-border overflow-hidden">
+      <Card className="border-border overflow-hidden">
         {/* Filter & Search Bar - Done via Server Component Form for simplicity */}
         <div className="p-4 border-b border-border bg-surface-2/30 flex flex-col sm:flex-row gap-4 justify-between items-center">
           <form className="flex-1 w-full flex items-center gap-2 max-w-md">
@@ -87,7 +87,6 @@ export default async function AdminProjectsPage({
         {/* Results Table */}
         {(!projects || projects.length === 0) ? (
           <div className="p-12 text-center bg-surface">
-            <FolderKanban className="mx-auto h-16 w-16 text-text-muted opacity-50 mb-4" />
             <h3 className="text-xl font-medium text-text-primary">No projects found</h3>
             <p className="text-text-secondary mt-2">Try adjusting your search or filters.</p>
             {(query || statusFilter !== "all") && (
@@ -99,20 +98,20 @@ export default async function AdminProjectsPage({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-surface-2/50 text-text-secondary text-xs uppercase border-b border-border">
+              <thead className="text-text-muted text-xs border-b border-border">
                 <tr>
-                  <th className="px-6 py-4 font-semibold">Project Name</th>
-                  <th className="px-6 py-4 font-semibold">Student</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Submitted Date</th>
-                  <th className="px-6 py-4 font-semibold text-right">Action</th>
+                  <th className="px-6 py-4 font-medium">Project Name</th>
+                  <th className="px-6 py-4 font-medium">Student</th>
+                  <th className="px-6 py-4 font-medium">Status</th>
+                  <th className="px-6 py-4 font-medium">Submitted Date</th>
+                  <th className="px-6 py-4 font-medium text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border bg-surface">
                 {(projects as unknown as AdminProjectWithProfile[]).map((project) => (
                   <tr key={project.id} className="hover:bg-surface-2/30 transition-colors">
                     <td className="px-6 py-4 font-medium text-text-primary max-w-[250px] truncate">
-                      <Link href={`/admin/projects/${project.id}`} className="hover:text-danger hover:underline transition-colors block" title={project.title}>
+                      <Link href={`/admin/projects/${project.id}`} className="hover:underline underline-offset-4 transition-colors block" title={project.title}>
                         {project.title}
                       </Link>
                     </td>

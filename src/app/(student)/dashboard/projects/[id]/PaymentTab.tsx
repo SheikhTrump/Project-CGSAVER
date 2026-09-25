@@ -7,7 +7,8 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, CreditCard, CheckCircle, XCircle, Clock, Phone, Hash, Upload } from "lucide-react";
+import { Loader2, CreditCard, Phone, Hash, Upload } from "lucide-react";
+import { PaymentStatusBadge } from "@/components/StatusBadge";
 import { format } from "date-fns";
 
 interface ProjectProps {
@@ -99,27 +100,6 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
     }
   };
 
-  /* statusIcon removed as it was unused */
-
-  const statusBadge = (status: string) => {
-    if (status === "confirmed")
-      return (
-        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-emerald-200">
-          <CheckCircle className="h-3 w-3" /> Confirmed
-        </span>
-      );
-    if (status === "rejected")
-      return (
-        <span className="inline-flex items-center gap-1 text-red-700 bg-red-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200">
-          <XCircle className="h-3 w-3" /> Rejected
-        </span>
-      );
-    return (
-      <span className="inline-flex items-center gap-1 text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-orange-200">
-        <Clock className="h-3 w-3" /> Pending Review
-      </span>
-    );
-  };
 
   // Determine if the student can submit a new payment
   const canSubmitPayment =
@@ -129,7 +109,7 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
     <div className="space-y-6">
       {/* Payment History */}
       {payments.length > 0 && (
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-accent" />
@@ -146,7 +126,7 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
                 >
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      {statusBadge(p.status)}
+                      <PaymentStatusBadge status={p.status} />
                       <span className="text-xs text-text-muted">
                         {format(new Date(p.created_at), "MMM d, yyyy 'at' h:mm a")}
                       </span>
@@ -192,11 +172,11 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
 
       {/* Pending verification notice */}
       {hasPendingPayment && (
-        <Card className="shadow-sm border-orange-200 bg-orange-50/50">
+        <Card className="border-border bg-surface">
           <CardContent className="p-6 text-center space-y-2">
-            <Loader2 className="h-8 w-8 text-orange-400 animate-spin mx-auto" />
-            <p className="font-medium text-orange-900">Payment Verification In Progress</p>
-            <p className="text-sm text-orange-700">
+            <Loader2 className="h-8 w-8 text-text-muted animate-spin mx-auto" />
+            <p className="font-medium text-text-primary">Payment Verification In Progress</p>
+            <p className="text-sm text-text-secondary">
               Your latest payment is being reviewed by our team. You&apos;ll be notified once it&apos;s confirmed.
             </p>
           </CardContent>
@@ -205,7 +185,7 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
 
       {/* Submit New Payment Form */}
       {canSubmitPayment && (
-        <Card className="shadow-md border-accent/20">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-text-primary">
               <CreditCard className="h-5 w-5 text-accent" />
@@ -225,10 +205,10 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
           <CardContent>
             <form onSubmit={handleSubmitPayment} className="space-y-5">
               {/* Payment Account Info */}
-              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 text-sm text-emerald-900">
+              <div className="bg-surface-2 p-4 rounded-lg border border-border text-sm text-text-primary">
                 <p className="font-semibold mb-2">Send Money to:</p>
                 {configLoading ? (
-                  <div className="flex items-center gap-2 text-emerald-500">
+                  <div className="flex items-center gap-2 text-text-muted">
                     <Loader2 className="h-3 w-3 animate-spin" />
                     <span className="text-xs">Loading...</span>
                   </div>
@@ -237,14 +217,14 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
                     {paymentConfig.bkash && (
                       <div className="flex justify-between items-center">
                         <span className="font-medium">bKash:</span>
-                        <span className="font-mono bg-white px-2.5 py-1 rounded border border-emerald-200 text-sm">
+                        <span className="font-mono bg-white px-2.5 py-1 rounded border border-border text-sm">
                           {paymentConfig.bkash}
                         </span>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-xs text-emerald-600">Payment details not configured yet.</p>
+                  <p className="text-xs text-text-secondary">Payment details not configured yet.</p>
                 )}
               </div>
 
@@ -315,7 +295,7 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
 
               <Button
                 type="submit"
-                className="w-full bg-accent hover:bg-accent-hover text-white rounded-pill h-11"
+                className="w-full bg-accent hover:bg-accent-hover text-white h-11"
                 disabled={loading}
               >
                 {loading ? (
@@ -332,9 +312,8 @@ export default function PaymentTab({ project, userId }: { project: ProjectProps;
 
       {/* No payment needed states */}
       {project.status !== "payment_pending" && payments.length === 0 && (
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardContent className="p-10 text-center text-text-muted">
-            <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-30" />
             <p className="font-medium text-text-secondary">No Payments Yet</p>
             <p className="text-sm mt-1">
               Payments will appear here once a quote is accepted and payment is required.

@@ -124,7 +124,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: AdminP
       <div className="xl:col-span-2 space-y-6">
         
         {/* Description */}
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Project Requirements</CardTitle>
           </CardHeader>
@@ -137,23 +137,23 @@ export default function AdminOverviewTab({ project, adminId }: { project: AdminP
 
         {/* Payment Verification Workflow */}
         {pendingPayments.length > 0 && (
-          <Card className="shadow-md border-orange-200 bg-orange-50/30">
+          <Card className="border-border bg-surface">
             <CardHeader>
-              <CardTitle className="text-orange-900 flex items-center gap-2">
+              <CardTitle className="text-text-primary flex items-center gap-2">
                 <CheckCircle className="h-5 w-5" />
                 Payment Verification Needed
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {pendingPayments.map((payment) => (
-                <div key={payment.id} className="bg-white p-4 rounded-md border border-orange-200 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                <div key={payment.id} className="bg-white p-4 rounded-md border border-border flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                   <div>
                     <p className="font-semibold text-text-primary">
                       {payment.amount} BDT via {payment.method.toUpperCase()}
                     </p>
                     <p className="text-sm text-text-secondary font-mono mt-1">TrxID: {payment.transaction_id}</p>
                     {payment.screenshot_url && (
-                      <a href={payment.screenshot_url} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-600 hover:underline mt-2 inline-block">
+                      <a href={payment.screenshot_url} target="_blank" rel="noopener noreferrer" className="text-xs text-text-secondary hover:underline mt-2 inline-block">
                         View Screenshot
                       </a>
                     )}
@@ -161,7 +161,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: AdminP
                   <div className="flex gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                     <Button 
                       size="sm" 
-                      className="bg-success hover:bg-emerald-600 text-white flex-1 sm:flex-none"
+                      className="bg-accent hover:bg-accent-hover text-white flex-1 sm:flex-none"
                       onClick={() => handlePaymentAction(payment.id, "confirmed")}
                       disabled={loading}
                     >
@@ -188,7 +188,7 @@ export default function AdminOverviewTab({ project, adminId }: { project: AdminP
       <div className="space-y-6">
         
         {/* Manual Status Manager */}
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader className="pb-3 border-b border-border/50 bg-surface-2/30">
             <CardTitle className="flex items-center gap-2 text-text-primary text-base">
               <Settings2 className="h-4 w-4 text-text-muted" /> Status Override
@@ -221,39 +221,39 @@ export default function AdminOverviewTab({ project, adminId }: { project: AdminP
         {/* Quote Creation Workflow */}
         {project.status === "in_review" || project.status === "submitted" ? (
           <form onSubmit={handleSendQuote}>
-            <Card className="shadow-md border-purple-200 bg-purple-50/20">
-              <CardHeader className="pb-3 border-b border-purple-100 bg-purple-50/50">
-                <CardTitle className="text-purple-900 flex items-center gap-2 text-base">
+            <Card className="border-border bg-surface">
+              <CardHeader className="pb-3 border-b border-border bg-surface">
+                <CardTitle className="text-text-primary flex items-center gap-2 text-base">
                   <FileSignature className="h-4 w-4" /> Submit Quote
                 </CardTitle>
-                <CardDescription className="text-purple-700 max-w-xs">
+                <CardDescription className="text-text-secondary max-w-xs">
                   Propose a price and timeline to the student.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price" className="text-purple-900 text-xs font-bold">Total Price (BDT) *</Label>
-                  <Input id="price" type="number" required min="1" value={quotePrice} onChange={e => setQuotePrice(e.target.value)} className="bg-white border-purple-200" placeholder="e.g. 5000" />
+                  <Label htmlFor="price" className="text-text-primary text-xs font-bold">Total Price (BDT) *</Label>
+                  <Input id="price" type="number" required min="1" value={quotePrice} onChange={e => setQuotePrice(e.target.value)} className="bg-white border-border" placeholder="e.g. 5000" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="date" className="text-purple-900 text-xs font-bold">Estimated Delivery Date *</Label>
-                  <Input id="date" type="date" required value={quoteDate} onChange={e => setQuoteDate(e.target.value)} className="bg-white border-purple-200" />
+                  <Label htmlFor="date" className="text-text-primary text-xs font-bold">Estimated Delivery Date *</Label>
+                  <Input id="date" type="date" required value={quoteDate} onChange={e => setQuoteDate(e.target.value)} className="bg-white border-border" />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="notes" className="text-purple-900 text-xs font-bold">Scope / Notes (Optional)</Label>
-                  <Textarea id="notes" value={quoteNotes} onChange={e => setQuoteNotes(e.target.value)} className="bg-white border-purple-200 min-h-[80px]" placeholder="Outline what is included..." />
+                  <Label htmlFor="notes" className="text-text-primary text-xs font-bold">Scope / Notes (Optional)</Label>
+                  <Textarea id="notes" value={quoteNotes} onChange={e => setQuoteNotes(e.target.value)} className="bg-white border-border min-h-[80px]" placeholder="Outline what is included..." />
                 </div>
                 
-                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white" disabled={loading}>
+                <Button type="submit" className="w-full bg-accent hover:bg-accent-hover text-white" disabled={loading}>
                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Send Quote
                 </Button>
               </CardContent>
             </Card>
           </form>
         ) : latestQuote ? (
-          <Card className="shadow-sm border-border bg-surface">
+          <Card className="border-border bg-surface">
             <CardHeader className="pb-3 border-b border-border/50">
               <CardTitle className="text-text-primary text-base flex items-center gap-2">
                 <FileSignature className="h-4 w-4 text-text-muted" /> Active Quote

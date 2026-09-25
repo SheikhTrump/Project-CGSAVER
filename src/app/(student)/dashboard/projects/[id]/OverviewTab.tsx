@@ -153,7 +153,7 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
       {/* Left Column: Details */}
       <div className="lg:col-span-2 space-y-6">
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Project Description</CardTitle>
           </CardHeader>
@@ -166,9 +166,9 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
         {/* Deliverables Section (Only show if there are deliverables) */}
         {project.project_files?.some((f: { file_type: string }) => f.file_type === "deliverable") && (
-          <Card className="shadow-sm border-info/20 bg-blue-50/30">
+          <Card className="border-border bg-surface">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-info">
+              <CardTitle className="flex items-center gap-2 text-text-primary">
                 <FileCheck2 className="h-5 w-5" />
                 Latest Deliverables
               </CardTitle>
@@ -176,9 +176,9 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
             <CardContent>
               <ul className="space-y-2">
                 {project.project_files?.filter((f) => f.file_type === "deliverable").map((file) => (
-                  <li key={file.id} className="flex items-center justify-between p-3 bg-surface border border-info/30 rounded-md">
+                  <li key={file.id} className="flex items-center justify-between p-3 bg-surface border border-border rounded-md">
                     <span className="text-sm font-medium text-text-primary">{file.file_name}</span>
-                    <Button variant="outline" size="sm" asChild className="text-info border-info hover:bg-info hover:text-white">
+                    <Button variant="outline" size="sm" asChild className="text-text-primary border-border hover:bg-surface-2">
                       <a href={file.file_url} target="_blank" rel="noopener noreferrer">Download</a>
                     </Button>
                   </li>
@@ -194,32 +194,32 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
         {/* Quote Action Card */}
         {project.status === "quoted" && pendingQuote && (
-          <Card className="shadow-md border-purple-200 bg-purple-50/50">
+          <Card className="border-border bg-surface">
             <CardHeader className="pb-3 text-center">
-              <CardTitle className="text-purple-900 border-b border-purple-200 pb-2">Admin Quote</CardTitle>
+              <CardTitle className="text-text-primary border-b border-border pb-2">Admin Quote</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-center pb-2">
               <div>
-                <p className="text-xs text-purple-600 font-semibold uppercase tracking-wider mb-1">Estimated Price</p>
-                <p className="text-4xl font-bold text-purple-900">
+                <p className="text-xs text-text-muted mb-1">Estimated price</p>
+                <p className="text-3xl font-medium tracking-tight tabular-nums text-text-primary">
                   {pendingQuote.currency} {pendingQuote.price}
                 </p>
               </div>
               {pendingQuote.delivery_date && (
                 <div>
-                  <p className="text-sm text-purple-700">Estimated Delivery</p>
-                  <p className="font-medium text-purple-900">{pendingQuote.delivery_date}</p>
+                  <p className="text-sm text-text-secondary">Estimated Delivery</p>
+                  <p className="font-medium text-text-primary">{pendingQuote.delivery_date}</p>
                 </div>
               )}
               {pendingQuote.scope_notes && (
-                <div className="bg-white p-3 rounded text-sm text-left text-purple-800 shadow-sm border border-purple-100 italic">
+                <div className="bg-white p-3 rounded text-sm text-left text-text-primary border border-border italic">
                   &quot;{pendingQuote.scope_notes}&quot;
                 </div>
               )}
             </CardContent>
             <CardFooter className="flex flex-col gap-2 pt-4">
               <Button
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-pill"
+                className="w-full bg-accent hover:bg-accent-hover text-white"
                 onClick={() => handleQuoteAction('accept', pendingQuote.id)}
                 disabled={loading}
               >
@@ -228,7 +228,7 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
               </Button>
               <Button
                 variant="ghost"
-                className="w-full text-purple-600 hover:bg-purple-100 rounded-pill"
+                className="w-full text-text-secondary hover:bg-surface-2"
                 onClick={() => handleQuoteAction('reject', pendingQuote.id)}
                 disabled={loading}
               >
@@ -240,38 +240,38 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
         {/* Payment Action Card */}
         {project.status === "payment_pending" && acceptedQuote && (
-          <Card className="shadow-md border-orange-200 bg-orange-50/50">
+          <Card className="border-border bg-surface">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-orange-900">
+              <CardTitle className="flex items-center gap-2 text-text-primary">
                 <CreditCard className="h-5 w-5" />
                 Payment Required
               </CardTitle>
-              <CardDescription className="text-orange-700">
+              <CardDescription className="text-text-secondary">
                 Please pay {acceptedQuote.currency} {acceptedQuote.price} to start work.
               </CardDescription>
             </CardHeader>
             <CardContent>
               {latestPayment?.status === "pending" ? (
-                <div className="bg-white p-4 rounded-md border border-orange-200 text-center space-y-2">
-                  <Loader2 className="h-8 w-8 text-orange-400 animate-spin mx-auto" />
-                  <p className="font-medium text-orange-900">Payment Verification Pending</p>
-                  <p className="text-sm text-orange-700">Your payment of {latestPayment.amount} {acceptedQuote.currency} via {latestPayment.method.toUpperCase()} (TrxID: {latestPayment.transaction_id}) is currently under review by our team.</p>
+                <div className="bg-white p-4 rounded-md border border-border text-center space-y-2">
+                  <Loader2 className="h-8 w-8 text-text-muted animate-spin mx-auto" />
+                  <p className="font-medium text-text-primary">Payment Verification Pending</p>
+                  <p className="text-sm text-text-secondary">Your payment of {latestPayment.amount} {acceptedQuote.currency} via {latestPayment.method.toUpperCase()} (TrxID: {latestPayment.transaction_id}) is currently under review by our team.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmitPayment} className="space-y-4">
-                  <div className="bg-white p-3 rounded-md border border-orange-200 text-sm text-orange-800 space-y-1">
+                  <div className="bg-white p-3 rounded-md border border-border text-sm text-text-primary space-y-1">
                     <p className="font-semibold">Payment Details:</p>
                     {paymentConfig ? (
                       <div className="space-y-2">
                         {paymentConfig.bkash && (
                           <div className="flex justify-between items-center">
                             <span className="font-medium">bKash:</span>
-                            <span className="font-mono bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{paymentConfig.bkash}</span>
+                            <span className="font-mono bg-surface-2 px-2 py-0.5 rounded border border-border">{paymentConfig.bkash}</span>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-orange-400">
+                      <div className="flex items-center gap-2 text-text-muted">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         <span className="text-xs">Loading payment details...</span>
                       </div>
@@ -280,21 +280,21 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="method" className="text-orange-900">Method</Label>
-                    <Input id="method" value="bKash" disabled className="bg-white border-orange-200" />
+                    <Label htmlFor="method" className="text-text-primary">Method</Label>
+                    <Input id="method" value="bKash" disabled className="bg-white border-border" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="trxId" className="text-orange-900">Transaction ID</Label>
-                    <Input id="trxId" required value={trxId} onChange={(e) => setTrxId(e.target.value)} className="bg-white border-orange-200" placeholder="e.g. 9FHD83J2K" />
+                    <Label htmlFor="trxId" className="text-text-primary">Transaction ID</Label>
+                    <Input id="trxId" required value={trxId} onChange={(e) => setTrxId(e.target.value)} className="bg-white border-border" placeholder="e.g. 9FHD83J2K" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="screenshot" className="text-orange-900">Screenshot (Optional)</Label>
-                    <Input id="screenshot" type="file" onChange={(e) => setPaymentFile(e.target.files?.[0] || null)} className="bg-white border-orange-200 text-xs" accept="image/*" />
+                    <Label htmlFor="screenshot" className="text-text-primary">Screenshot (Optional)</Label>
+                    <Input id="screenshot" type="file" onChange={(e) => setPaymentFile(e.target.files?.[0] || null)} className="bg-white border-border text-xs" accept="image/*" />
                   </div>
 
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent-hover text-white rounded-pill mt-2" disabled={loading}>
+                  <Button type="submit" className="w-full bg-accent hover:bg-accent-hover text-white mt-2" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Submit Payment Record"}
                   </Button>
                 </form>
@@ -305,14 +305,14 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
         {/* Delivery Completion Actions */}
         {project.status === "delivered" && (
-          <Card className="shadow-md border-teal-200 bg-teal-50/50">
+          <Card className="border-border bg-surface">
             <CardHeader className="text-center">
-              <CardTitle className="text-teal-900">Project Delivered!</CardTitle>
-              <CardDescription className="text-teal-700">Please review the deliverables.</CardDescription>
+              <CardTitle className="text-text-primary">Project delivered</CardTitle>
+              <CardDescription className="text-text-secondary">Please review the deliverables.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button
-                className="w-full bg-success hover:bg-emerald-600 text-white rounded-pill h-12 text-md"
+                className="w-full h-10"
                 onClick={() => handleDeliveryAction('complete')}
                 disabled={loading}
               >
@@ -321,7 +321,7 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
               </Button>
               <Button
                 variant="outline"
-                className="w-full text-danger border-red-200 hover:bg-red-50 hover:text-red-700 rounded-pill"
+                className="w-full text-danger border-red-200 hover:bg-red-50 hover:text-red-700"
                 onClick={() => handleDeliveryAction('revision')}
                 disabled={loading}
               >
@@ -334,19 +334,19 @@ export default function ProjectOverviewTab({ project }: { project: ProjectProps 
 
         {/* Completed State */}
         {project.status === "completed" && (
-          <div className="bg-green-50 border border-green-200 rounded-card p-6 text-center shadow-sm">
-            <CheckCircle className="h-12 w-12 text-success mx-auto mb-3" />
-            <h3 className="font-bold text-green-900 text-lg">Project Completed</h3>
-            <p className="text-green-700 text-sm mt-1">Thank you for using CGSAVER! Check your files and messages anytime.</p>
+          <div className="bg-surface-2 border border-border rounded-card p-6 text-center">
+            <CheckCircle className="h-5 w-5 text-success mx-auto mb-3" />
+            <h3 className="font-medium text-text-primary">Project completed</h3>
+            <p className="text-text-secondary text-sm mt-1">Thanks for using CGSAVER. Check your files and messages anytime.</p>
           </div>
         )}
 
         {/* Cancelled State */}
         {project.status === "cancelled" && (
-          <div className="bg-slate-100 border border-slate-200 rounded-card p-6 text-center shadow-sm">
-            <XCircle className="h-12 w-12 text-slate-400 mx-auto mb-3" />
-            <h3 className="font-bold text-slate-700 text-lg">Project Cancelled</h3>
-            <p className="text-slate-500 text-sm mt-1">This project has been cancelled and cannot be reopened.</p>
+          <div className="bg-surface-2 border border-border rounded-card p-6 text-center">
+            <XCircle className="h-5 w-5 text-text-muted mx-auto mb-3" />
+            <h3 className="font-medium text-text-secondary">Project cancelled</h3>
+            <p className="text-text-muted text-sm mt-1">This project has been cancelled and cannot be reopened.</p>
           </div>
         )}
       </div>

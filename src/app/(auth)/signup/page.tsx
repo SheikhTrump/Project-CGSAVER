@@ -81,16 +81,17 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md shadow-card rounded-card border-border">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-12">
+        <Link href="/" className="mb-8 text-[15px] font-semibold tracking-tight text-text-primary">cgsaver</Link>
+        <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-text-primary">Check your email</CardTitle>
+            <CardTitle className="text-xl font-medium tracking-tight text-text-primary">Check your email</CardTitle>
             <CardDescription className="text-text-secondary">
               We&apos;ve sent a verification link to {formData.email}. Please verify your email to continue.
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button variant="outline" asChild className="w-full rounded-pill border-border text-text-primary">
+            <Button variant="outline" asChild className="h-10 w-full">
               <Link href="/login" className="flex items-center justify-center gap-2">
                 <ArrowLeft className="h-4 w-4" /> Go to Login
               </Link>
@@ -102,10 +103,11 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-card rounded-card border-border">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold text-text-primary tracking-tight">Create an account</CardTitle>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-12">
+        <Link href="/" className="mb-8 text-[15px] font-semibold tracking-tight text-text-primary">cgsaver</Link>
+      <Card className="w-full max-w-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl font-medium tracking-tight text-text-primary">Create an account</CardTitle>
           <CardDescription className="text-text-secondary">
             Enter your details below to join CGSAVER
           </CardDescription>
@@ -113,24 +115,24 @@ export default function SignupPage() {
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-text-primary">Full Name</Label>
-              <Input id="fullName" required placeholder="John Doe" value={formData.fullName} onChange={handleChange} className="rounded-btn" />
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input id="fullName" required placeholder="John Doe" value={formData.fullName} onChange={handleChange} />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-text-primary">Email</Label>
-              <Input id="email" type="email" required placeholder="m@example.com" value={formData.email} onChange={handleChange} className="rounded-btn" />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" required placeholder="m@example.com" value={formData.email} onChange={handleChange} />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-text-primary">Password</Label>
-              <Input id="password" type="password" required minLength={8} value={formData.password} onChange={handleChange} className="rounded-btn" />
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" required minLength={8} value={formData.password} onChange={handleChange} />
               <p className="text-xs text-text-muted">Min 8 characters with at least one letter and one number.</p>
             </div>
             
 
             
-            <Button type="submit" className="w-full rounded-pill bg-accent hover:bg-accent-hover text-white transition-colors" disabled={loading}>
+            <Button type="submit" className="h-10 w-full" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
@@ -139,15 +141,15 @@ export default function SignupPage() {
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-text-muted">Or continue with</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-surface px-2 text-text-muted">or</span>
             </div>
           </div>
 
           <Button 
             variant="outline" 
             type="button" 
-            className="w-full rounded-pill border-border text-text-primary hover:bg-surface-2 transition-colors flex items-center justify-center gap-2"
+            className="h-10 w-full gap-2"
             onClick={handleGoogleSignup}
             disabled={loading}
           >
@@ -172,10 +174,10 @@ export default function SignupPage() {
             Google
           </Button>
         </CardContent>
-        <CardFooter className="flex flex-col items-center gap-2">
+        <CardFooter className="flex flex-col items-center gap-2 bg-surface">
           <div className="text-sm text-text-muted">
             Already have an account?{" "}
-            <Link href="/login" className="text-accent hover:underline font-medium">
+            <Link href="/login" className="font-medium text-text-primary underline decoration-border underline-offset-4 hover:decoration-text-primary">
               Login here
             </Link>
           </div>

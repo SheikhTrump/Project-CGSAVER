@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, MailCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -35,19 +35,17 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md shadow-card rounded-card border-border">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-              <MailCheck className="h-6 w-6 text-accent" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-text-primary">Check your email</CardTitle>
-            <CardDescription className="text-text-secondary mt-2">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-12">
+        <Link href="/" className="mb-8 text-[15px] font-semibold tracking-tight text-text-primary">cgsaver</Link>
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-medium tracking-tight text-text-primary">Check your email</CardTitle>
+            <CardDescription className="mt-1 text-text-secondary">
               We&apos;ve sent a password reset link to <span className="font-semibold text-text-primary">{email}</span>.
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button variant="outline" asChild className="w-full rounded-pill border-border text-text-primary">
+            <Button variant="outline" asChild className="h-10 w-full">
               <Link href="/login" className="flex items-center justify-center gap-2">
                 <ArrowLeft className="h-4 w-4" /> Back to Login
               </Link>
@@ -59,10 +57,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-card rounded-card border-border">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold text-text-primary tracking-tight">Forgot Password</CardTitle>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-12">
+        <Link href="/" className="mb-8 text-[15px] font-semibold tracking-tight text-text-primary">cgsaver</Link>
+      <Card className="w-full max-w-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl font-medium tracking-tight text-text-primary">Forgot Password</CardTitle>
           <CardDescription className="text-text-secondary">
             Enter your email and we&apos;ll send you a reset link
           </CardDescription>
@@ -70,7 +69,7 @@ export default function ForgotPasswordPage() {
         <CardContent>
           <form onSubmit={handleResetRequest} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-text-primary">Email Address</Label>
+              <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
                 type="email"
@@ -78,7 +77,7 @@ export default function ForgotPasswordPage() {
                 placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="rounded-btn"
+               
               />
             </div>
             
@@ -86,13 +85,13 @@ export default function ForgotPasswordPage() {
               <p className="text-sm font-medium text-danger">{errorMsg}</p>
             )}
 
-            <Button type="submit" className="w-full rounded-pill bg-accent hover:bg-accent-hover text-white transition-colors" disabled={loading}>
+            <Button type="submit" className="h-10 w-full" disabled={loading}>
               {loading ? "Sending link..." : "Send Reset Link"}
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col items-center gap-2">
-          <Link href="/login" className="text-sm text-text-muted hover:text-accent flex items-center gap-1 transition-colors">
+        <CardFooter className="flex flex-col items-center gap-2 bg-surface">
+          <Link href="/login" className="flex items-center gap-1 text-sm text-text-muted transition-colors hover:text-text-primary">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Login
           </Link>
         </CardFooter>

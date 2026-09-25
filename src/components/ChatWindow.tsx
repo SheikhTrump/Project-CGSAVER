@@ -20,12 +20,12 @@ type Message = {
 export function ChatWindow({ 
   projectId, 
   currentUserId, 
-  title = "Project Discussion", 
-  isAdminView = false 
+  title = "Project Discussion",
 }: { 
   projectId: string; 
   currentUserId: string;
   title?: string;
+  // Kept for callers; both portals now share one chat style
   isAdminView?: boolean;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -143,25 +143,22 @@ export function ChatWindow({
   };
 
   return (
-    <Card className="shadow-sm border-border h-[600px] flex flex-col">
-      <CardHeader className={`border-b border-border py-4 ${isAdminView ? 'bg-sidebar-hover text-white rounded-t-card' : 'bg-surface-2/30'}`}>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MessageSquareText className={`h-5 w-5 ${isAdminView ? 'text-danger' : 'text-accent'}`} /> 
+    <Card className="border-border h-[600px] flex flex-col">
+      <CardHeader className="border-b border-border pb-4">
+        <CardTitle className="flex items-center gap-2">
+          <MessageSquareText className="h-4 w-4 text-text-muted" />
           {title}
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 overflow-y-auto p-6 bg-surface space-y-4 flex flex-col">
+      <CardContent className="flex-1 overflow-y-auto px-5 py-2 space-y-4 flex flex-col">
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-text-muted opacity-50" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="text-center space-y-3 opacity-50 my-auto">
-            <MessageSquareText className="h-12 w-12 mx-auto text-text-muted" />
-            <p className="text-text-muted text-sm border border-dashed border-text-muted/50 p-3 rounded-md inline-block">
-              Send a message to start the conversation! Real-time sync is active.
-            </p>
+          <div className="text-center my-auto">
+            <p className="text-sm text-text-muted">No messages yet. Send one to start the conversation.</p>
           </div>
         ) : (
           <div className="flex-1 flex flex-col gap-3 justify-start">
@@ -175,16 +172,16 @@ export function ChatWindow({
                   <div className={`
                     max-w-[80%] p-3 text-sm relative
                     ${isMine 
-                      ? 'rounded-l-xl rounded-tr-xl' 
-                      : 'rounded-r-xl rounded-tl-xl'
+                      ? 'rounded-l-lg rounded-tr-lg' 
+                      : 'rounded-r-lg rounded-tl-lg'
                     }
                     ${isMine 
-                      ? (isAdminView ? 'bg-danger text-white' : 'bg-accent text-white') 
-                      : (isAdminMsg ? 'bg-sidebar-bg text-white border border-sidebar-hover' : 'bg-surface-2 border border-border text-text-primary')
+                      ? 'bg-accent text-white' 
+                      : (isAdminMsg ? 'bg-surface-2 text-text-primary' : 'bg-surface border border-border text-text-primary')
                     }
                   `}>
                     {!isMine && !isAdminMsg && (
-                      <span className="block text-[10px] font-bold opacity-70 mb-1 tracking-wider uppercase text-text-muted">
+                      <span className="block text-xs font-medium mb-1 text-text-muted">
                         {msg.profiles?.full_name || 'User'}
                       </span>
                     )}
@@ -201,7 +198,7 @@ export function ChatWindow({
         )}
       </CardContent>
 
-      <CardFooter className="border-t border-border p-4 bg-surface-2/30">
+      <CardFooter className="p-3">
         <form onSubmit={handleSend} className="flex w-full items-center gap-3">
           <Input 
             required
@@ -209,13 +206,13 @@ export function ChatWindow({
             onChange={(e) => setNewMessage(e.target.value)}
             disabled={sending}
             placeholder="Type your message..." 
-            className="flex-1 rounded-full bg-white shadow-sm border-border focus-visible:ring-accent"
+            className="flex-1"
           />
           <Button 
             type="submit" 
             disabled={sending || !newMessage.trim()} 
             size="icon" 
-            className={`rounded-full shadow-sm shrink-0 text-white ${isAdminView ? 'bg-danger hover:bg-red-600' : 'bg-accent hover:bg-accent-hover'}`}
+            className="shrink-0"
           >
             {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>

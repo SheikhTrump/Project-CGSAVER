@@ -11,13 +11,13 @@ import {
   CreditCard,
   CheckCircle,
   XCircle,
-  Clock,
   Loader2,
   Phone,
   ExternalLink,
   Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { PaymentStatusBadge } from "@/components/StatusBadge";
 
 type Payment = {
   id: string;
@@ -117,30 +117,29 @@ export default function AdminPaymentsPage() {
   if (authLoading || loading) {
     return (
       <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-danger" />
+        <Loader2 className="h-8 w-8 animate-spin text-text-muted" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto animate-in fade-in duration-500">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">Payment Management</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">Payment Management</h1>
         <p className="text-text-secondary mt-1">
           Review, verify, and manage all student payment submissions.
         </p>
       </div>
 
-      <Card className="shadow-sm border-border overflow-hidden">
+      <Card className="border-border overflow-hidden">
         {payments.length === 0 ? (
           <div className="p-12 text-center text-text-muted">
-            <CreditCard className="mx-auto h-12 w-12 opacity-50 mb-3" />
             <p>No transactions found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-surface-2/50 text-text-secondary text-xs uppercase border-b border-border">
+              <thead className="text-text-muted text-xs border-b border-border">
                 <tr>
                   <th className="px-5 py-4">Date</th>
                   <th className="px-5 py-4">Student</th>
@@ -172,7 +171,7 @@ export default function AdminPaymentsPage() {
                     <td className="px-5 py-4 max-w-[180px]">
                       <Link
                         href={`/admin/projects/${p.project_id}`}
-                        className="hover:text-danger hover:underline text-text-primary font-medium truncate block"
+                        className="hover:underline underline-offset-4 text-text-primary font-medium truncate block"
                       >
                         {p.projects?.title}
                       </Link>
@@ -213,19 +212,7 @@ export default function AdminPaymentsPage() {
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      {p.status === "confirmed" ? (
-                        <span className="inline-flex items-center text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-emerald-200">
-                          <CheckCircle className="h-3 w-3 mr-1" /> Confirmed
-                        </span>
-                      ) : p.status === "rejected" ? (
-                        <span className="inline-flex items-center text-red-600 bg-red-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200">
-                          <XCircle className="h-3 w-3 mr-1" /> Rejected
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-orange-200">
-                          <Clock className="h-3 w-3 mr-1" /> Pending
-                        </span>
-                      )}
+                      <PaymentStatusBadge status={p.status} />
                     </td>
                     <td className="px-5 py-4 text-right">
                       {p.status === "pending" ? (
@@ -233,7 +220,7 @@ export default function AdminPaymentsPage() {
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-pill text-xs h-8 px-3"
+                              className="bg-accent hover:bg-accent-hover text-white text-xs h-8 px-3"
                               disabled={actionLoading === p.id}
                               onClick={() => handleConfirm(p.id, p.project_id)}
                             >
@@ -248,7 +235,7 @@ export default function AdminPaymentsPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-red-200 text-red-600 hover:bg-red-50 rounded-pill text-xs h-8 px-3"
+                              className="border-red-200 text-red-600 hover:bg-red-50 text-xs h-8 px-3"
                               disabled={actionLoading === p.id}
                               onClick={() =>
                                 setShowRejectInput(

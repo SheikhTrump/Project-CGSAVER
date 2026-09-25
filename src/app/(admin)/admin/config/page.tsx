@@ -112,7 +112,7 @@ export default function SystemSettingsPage() {
   if (authLoading || loading) {
     return (
       <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-danger" />
+        <Loader2 className="h-8 w-8 animate-spin text-text-muted" />
       </div>
     );
   }
@@ -120,7 +120,7 @@ export default function SystemSettingsPage() {
   if (!isSuperAdmin) {
     return (
       <div className="p-8 text-center bg-danger/10 text-danger rounded-md border border-danger/20">
-        <ShieldCheck className="h-12 w-12 mx-auto mb-4" />
+        <ShieldCheck className="h-6 w-6 mx-auto mb-4" />
         <h2 className="text-xl font-bold">Access Denied</h2>
         <p>You must have Super Admin privileges to view this page.</p>
       </div>
@@ -128,9 +128,9 @@ export default function SystemSettingsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">System Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">System Settings</h1>
         <p className="text-text-secondary mt-1">Manage global platform configurations and preferences.</p>
       </div>
 
@@ -144,18 +144,18 @@ export default function SystemSettingsPage() {
       {success && (
         <div className="bg-success/10 border border-success/20 text-success p-4 rounded-md flex items-center gap-3">
           <ShieldCheck className="h-5 w-5" />
-          <p>Settings saved successfully!</p>
+          <p>Settings saved.</p>
         </div>
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Payment Account Settings */}
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Payment Accounts</CardTitle>
             <CardDescription>Configure the bKash number displayed to students during payment.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 text-white">
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="bkash">bKash Number</Label>
               <Input 
@@ -169,7 +169,7 @@ export default function SystemSettingsPage() {
           </CardContent>
           <CardFooter className="border-t border-border pt-4">
             <Button 
-              className="bg-accent hover:bg-accent-hover text-white rounded-pill" 
+              className="bg-accent hover:bg-accent-hover text-white" 
               onClick={handleSavePaymentMethods}
               disabled={saving}
             >
@@ -180,7 +180,7 @@ export default function SystemSettingsPage() {
         </Card>
 
         {/* Platform Status Settings */}
-        <Card className="shadow-sm border-border">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle>Platform Controls</CardTitle>
             <CardDescription>Toggle platform-wide features and maintenance mode.</CardDescription>
@@ -214,7 +214,7 @@ export default function SystemSettingsPage() {
           </CardContent>
           <CardFooter className="border-t border-border pt-4">
             <Button 
-              className="bg-accent hover:bg-accent-hover text-white rounded-pill" 
+              className="bg-accent hover:bg-accent-hover text-white" 
               onClick={handleSavePlatformSettings}
               disabled={saving}
             >

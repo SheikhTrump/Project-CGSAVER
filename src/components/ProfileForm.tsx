@@ -58,7 +58,7 @@ export function ProfileForm({ initialProfile }: { initialProfile: Profile }) {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-sm border-border">
+    <Card className="w-full max-w-2xl mx-auto border-border">
       <CardHeader>
         <CardTitle className="text-2xl font-bold flex items-center gap-2">
           <User className="h-6 w-6 text-accent" />
@@ -123,7 +123,7 @@ export function ProfileForm({ initialProfile }: { initialProfile: Profile }) {
           form="profile-form" 
           type="submit" 
           disabled={loading}
-          className="rounded-pill bg-accent hover:bg-accent-hover text-white px-8 transition-all active:scale-95"
+          className="bg-accent hover:bg-accent-hover text-white px-8"
         >
           {loading ? (
             <>

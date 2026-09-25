@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CGSAVER - Student Dev Agency",
-  description: "Bangladesh's Elite Student Dev Agency",
+  title: "CGSAVER",
+  description: "Software projects for students, built by students in Bangladesh.",
 };
 
 export default function RootLayout({
@@ -28,10 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased`}
-      >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

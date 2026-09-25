@@ -110,24 +110,22 @@ export function NotificationBell() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors">
-          <Bell className="h-5 w-5" />
+          <Bell className="h-[18px] w-[18px]" strokeWidth={1.75} />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-2 inline-flex h-2 w-2 rounded-full bg-danger">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
-            </span>
+            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-danger" />
           )}
         </Button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" className="w-80 shadow-lg border-border">
-        <DropdownMenuLabel className="font-semibold text-text-primary flex justify-between items-center py-2 px-3">
+      <DropdownMenuContent align="end" className="w-80 border-border">
+        <DropdownMenuLabel className="font-medium text-text-primary flex justify-between items-center py-2 px-3">
           <span>Notifications</span>
           {unreadCount > 0 && (
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={markAllAsRead}
-              className="h-auto p-1 text-xs text-accent hover:text-accent-hover font-medium"
+              className="h-auto p-1 text-xs font-normal"
             >
               <Check className="h-3 w-3 mr-1" /> Mark all read
             </Button>
@@ -143,19 +141,18 @@ export function NotificationBell() {
             </div>
           ) : notifications.length === 0 ? (
             <div className="py-8 text-center px-4">
-              <Bell className="h-8 w-8 mx-auto text-text-muted opacity-30 mb-2" />
-              <p className="text-sm font-medium text-text-primary">All caught up!</p>
+              <p className="text-sm font-medium text-text-primary">All caught up</p>
               <p className="text-xs text-text-secondary">You have no notifications yet.</p>
             </div>
           ) : (
             notifications.map((notification) => (
               <DropdownMenuItem 
                 key={notification.id} 
-                className={`flex flex-col items-start px-4 py-3 cursor-pointer ${notification.is_read ? 'opacity-75 focus:bg-surface-2' : 'bg-accent/5 focus:bg-accent/10 border-l-2 border-accent'}`}
+                className={`flex flex-col items-start px-4 py-3 cursor-pointer ${notification.is_read ? 'focus:bg-surface-2' : 'bg-surface-2/60 focus:bg-surface-2'}`}
                 onClick={() => markAsReadAndNavigate(notification)}
               >
                 <div className="flex justify-between w-full mb-1">
-                  <span className={`font-semibold text-sm ${notification.is_read ? 'text-text-primary' : 'text-accent'}`}>
+                  <span className={`text-sm ${notification.is_read ? 'text-text-secondary' : 'font-medium text-text-primary'}`}>
                     {notification.title}
                   </span>
                   <span className="text-[10px] text-text-muted whitespace-nowrap ml-2">

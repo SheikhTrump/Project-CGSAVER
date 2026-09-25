@@ -26,14 +26,14 @@ export default async function AdminProjectDetailPage({ params }: { params: { id:
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="max-w-5xl mx-auto space-y-6">
       
       {/* Header Section */}
-      <div className="bg-surface border border-border rounded-card p-6 shadow-sm">
+      <div className="bg-surface border border-border rounded-card p-6">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-3">
              <div className="flex items-center gap-3">
-               <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary">
+               <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
                  {project.title}
                </h1>
                <StatusBadge status={project.status as ProjectStatus} />
@@ -76,19 +76,19 @@ export default async function AdminProjectDetailPage({ params }: { params: { id:
         <TabsList className="w-full justify-start border-b border-border bg-transparent rounded-none p-0 h-auto space-x-6">
           <TabsTrigger 
             value="overview" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-danger data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-danger px-1 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-text-primary px-1 py-3"
           >
             Management & Overview
           </TabsTrigger>
           <TabsTrigger 
             value="messages" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-danger data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-danger px-1 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-text-primary px-1 py-3"
           >
             Communication
           </TabsTrigger>
           <TabsTrigger 
             value="files" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-danger data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-danger px-1 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-text-primary px-1 py-3"
           >
             Project Files ({project.project_files?.length || 0})
           </TabsTrigger>

@@ -73,10 +73,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-card rounded-card border-border">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold text-text-primary tracking-tight">Welcome Back</CardTitle>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 py-12">
+        <Link href="/" className="mb-8 text-[15px] font-semibold tracking-tight text-text-primary">cgsaver</Link>
+      <Card className="w-full max-w-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl font-medium tracking-tight text-text-primary">Welcome Back</CardTitle>
           <CardDescription className="text-text-secondary">
             Log in to your CGSAVER account
           </CardDescription>
@@ -84,28 +85,28 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-text-primary">Email</Label>
-              <Input id="email" type="email" required placeholder="m@example.com" value={formData.email} onChange={handleChange} className="rounded-btn" />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" required placeholder="m@example.com" value={formData.email} onChange={handleChange} />
             </div>
             
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-text-primary">Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <Link 
                   href="/forgot-password" 
-                  className="text-xs font-medium text-accent hover:underline transition-colors"
+                  className="text-xs text-text-muted transition-colors hover:text-text-primary"
                 >
                   Forgot password?
                 </Link>
               </div>
-              <Input id="password" type="password" required value={formData.password} onChange={handleChange} className="rounded-btn" />
+              <Input id="password" type="password" required value={formData.password} onChange={handleChange} />
             </div>
             
             {errorMsg && (
               <p className="text-sm font-medium text-danger">{errorMsg}</p>
             )}
 
-            <Button type="submit" className="w-full rounded-pill bg-accent hover:bg-accent-hover text-white transition-colors" disabled={loading}>
+            <Button type="submit" className="h-10 w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
@@ -114,15 +115,15 @@ export default function LoginPage() {
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-text-muted">Or continue with</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-surface px-2 text-text-muted">or</span>
             </div>
           </div>
 
           <Button 
             variant="outline" 
             type="button" 
-            className="w-full rounded-pill border-border text-text-primary hover:bg-surface-2 transition-colors flex items-center justify-center gap-2"
+            className="h-10 w-full gap-2"
             onClick={handleGoogleLogin}
             disabled={loading}
           >
@@ -147,10 +148,10 @@ export default function LoginPage() {
             Google
           </Button>
         </CardContent>
-        <CardFooter className="flex flex-col items-center gap-2">
+        <CardFooter className="flex flex-col items-center gap-2 bg-surface">
           <div className="text-sm text-text-muted">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-accent hover:underline font-medium">
+            <Link href="/signup" className="font-medium text-text-primary underline decoration-border underline-offset-4 hover:decoration-text-primary">
               Sign up here
             </Link>
           </div>

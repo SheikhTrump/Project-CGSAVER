@@ -2,7 +2,6 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Users } from "lucide-react";
 
 export default async function AdminUsersPage() {
   const supabase = createClient();
@@ -19,22 +18,21 @@ export default async function AdminUsersPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto animate-in fade-in duration-500">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">User Management</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">User Management</h1>
         <p className="text-text-secondary mt-1">Directory of all registered students and admins.</p>
       </div>
 
-      <Card className="shadow-sm border-border overflow-hidden">
+      <Card className="border-border overflow-hidden">
         {(!profiles || profiles.length === 0) ? (
           <div className="p-12 text-center text-text-muted">
-            <Users className="mx-auto h-12 w-12 opacity-50 mb-3" />
             <p>No users found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-surface-2/50 text-text-secondary text-xs uppercase border-b border-border">
+              <thead className="text-text-muted text-xs border-b border-border">
                 <tr>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -49,8 +47,8 @@ export default async function AdminUsersPage() {
                     <td className="px-6 py-4 text-text-secondary">{p.email}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-md text-xs font-semibold capitalize ${
-                        p.role === 'superadmin' ? 'bg-danger/10 text-danger border border-danger/20' : 
-                        p.role === 'admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 
+                        p.role === 'superadmin' ? 'bg-accent text-white border border-accent' : 
+                        p.role === 'admin' ? 'bg-surface-2 text-text-secondary border border-border' : 
                         'bg-surface-2 text-text-secondary border border-border'
                       }`}>
                         {p.role}

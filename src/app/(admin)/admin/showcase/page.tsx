@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Trash2, Edit2, ExternalLink, Sparkles } from "lucide-react";
+import { Loader2, Plus, Trash2, Edit2, ExternalLink } from "lucide-react";
 
 interface ShowcaseEntry {
   id: string;
@@ -129,22 +129,21 @@ export default function AdminShowcasePage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary flex items-center gap-2">
-          <Sparkles className="h-8 w-8 text-accent" />
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
           Showcase Management
         </h1>
-        <p className="text-text-secondary mt-1">Manage projects displayed in the public Hall of Fame.</p>
+        <p className="text-text-secondary mt-1">Manage the projects displayed on the public showcase page.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form Column */}
         <div className="lg:col-span-1">
-          <Card className="shadow-sm border-border sticky top-24">
+          <Card className="border-border sticky top-24">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                {editingId ? <Edit2 className="h-4 w-4" /> : <Plus className="h-4 w-4 text-accent" />}
+                {editingId ? <Edit2 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                 {editingId ? "Edit Showcase Project" : "Add New Project"}
               </CardTitle>
               <CardDescription>Enter details manually for the public showcase.</CardDescription>
@@ -198,18 +197,17 @@ export default function AdminShowcasePage() {
           
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 bg-surface rounded-card border border-border border-dashed">
-              <Loader2 className="h-8 w-8 text-accent animate-spin mb-2" />
+              <Loader2 className="h-6 w-6 text-text-muted animate-spin mb-2" />
               <p className="text-text-secondary">Loading showcase entries...</p>
             </div>
           ) : entries.length === 0 ? (
             <div className="text-center py-20 bg-surface rounded-card border border-border border-dashed">
-              <Sparkles className="h-12 w-12 mx-auto text-text-muted opacity-20 mb-4" />
-              <p className="text-text-secondary">No projects in your showcase yet. Start by adding one!</p>
+                            <p className="text-text-secondary">No projects in your showcase yet. Add one using the form.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {entries.map((entry) => (
-                <Card key={entry.id} className="group overflow-hidden border-border transition-all hover:shadow-md">
+                <Card key={entry.id} className="group overflow-hidden border-border transition-all">
                   <div className="flex flex-col sm:flex-row h-full">
                     {entry.image_url && (
                       <div className="sm:w-48 h-32 sm:h-auto overflow-hidden bg-muted flex-shrink-0 relative">
@@ -217,7 +215,7 @@ export default function AdminShowcasePage() {
                           src={entry.image_url} 
                           alt={entry.title} 
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover"
                           unoptimized
                         />
                       </div>
@@ -225,15 +223,15 @@ export default function AdminShowcasePage() {
                     <div className="flex-1 p-5 flex flex-col">
                       <div className="flex justify-between items-start gap-4 mb-2">
                         <div>
-                          <h3 className="font-bold text-text-primary">{entry.title}</h3>
+                          <h3 className="font-medium text-text-primary">{entry.title}</h3>
                           {entry.tech_stack && (
-                            <span className="text-[10px] uppercase tracking-wider font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded mt-1 inline-block">
+                            <span className="font-mono text-xs text-text-muted mt-1 inline-block">
                               {entry.tech_stack}
                             </span>
                           )}
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-accent" onClick={() => handleEdit(entry)}>
+                        <div className="flex gap-1">
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted" onClick={() => handleEdit(entry)}>
                             <Edit2 className="h-4 w-4" />
                           </Button>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-danger" onClick={() => handleDelete(entry.id)}>
@@ -253,7 +251,7 @@ export default function AdminShowcasePage() {
                             href={entry.live_link} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-xs font-bold text-danger hover:underline flex items-center gap-1"
+                            className="text-xs text-text-secondary hover:text-text-primary hover:underline flex items-center gap-1"
                           >
                             Live Demo <ExternalLink className="h-3 w-3" />
                           </a>
