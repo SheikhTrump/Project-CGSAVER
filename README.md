@@ -1,243 +1,134 @@
-<div align="center">
+# CGSAVER
 
-# 🎓 CGSAVER
+A web app for a student software studio in Bangladesh. Students submit project requirements, receive a fixed-price quote, pay by bKash, Nagad or bank transfer, and download the finished code. Admins manage quotes, payments, deliverables and a public showcase of past work.
 
-### Your software project, built properly and on time.
+Live at https://project-cgsaver.vercel.app
 
-A student dev studio platform from Bangladesh. Students submit project requirements, get a fixed-price quote, pay through bKash / Nagad / bank transfer, and download clean, working code with documentation.
+## Features
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?style=for-the-badge&logo=vercel)](https://project-cgsaver.vercel.app)
+Students can:
 
-[**🌐 Live Site**](https://project-cgsaver.vercel.app) · [**✨ Showcase**](https://project-cgsaver.vercel.app/showcase) · [**🐛 Report a Bug**](https://github.com/SheikhTrump/Project-CGSAVER/issues)
+- Sign up, log in and reset their password
+- Submit a project with requirement files, tech stack, deadline and budget
+- Chat with an admin on each project in real time
+- Accept or reject a quote
+- Submit payment details (transaction ID, sender number, screenshot)
+- Download deliverables, request a revision or mark the project complete
+- Leave a rating and review
 
-</div>
+Admins can:
 
----
+- View and update every project
+- Send quotes with price, delivery date and scope notes
+- Confirm or reject payments
+- Upload deliverables
+- Post announcements
+- Manage the public showcase
+- Manage users and roles (`student`, `admin`, `superadmin`)
+- Edit payment account details and platform settings (maintenance mode, accepting new projects)
 
-## 📖 Table of Contents
+Both get in-app notifications, and email notifications are sent over Gmail SMTP.
 
-- [How It Works](#-how-it-works)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Database Setup](#-database-setup)
-- [Project Structure](#-project-structure)
-- [Project Lifecycle](#-project-lifecycle)
-- [Scripts](#-scripts)
-- [Deployment](#-deployment)
+## Tech stack
 
----
+- Next.js 14 (App Router) and TypeScript
+- Supabase for Postgres, auth, file storage and realtime
+- Tailwind CSS with shadcn/ui components
+- React Hook Form and Zod for forms
+- Zustand for client state
+- Nodemailer and React Email for email
+- Hosted on Vercel
 
-## 🔄 How It Works
+## Running locally
 
-| Step | | What happens |
-|:---:|:---|:---|
-| **01** | 📝 **Submit** | Upload your requirements and set a deadline. |
-| **02** | 💬 **Quote** | We review the scope and send a flat, fixed price. No hourly billing, no surprises. |
-| **03** | 💳 **Develop** | Pay securely via bKash, Nagad, or bank transfer and development begins. |
-| **04** | 📦 **Deliver** | Download your full source code and documentation. |
-
----
-
-## ✨ Features
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### 👩‍🎓 For Students
-- 🔐 Sign up, log in, and reset your password (Supabase Auth)
-- 📝 Submit projects with requirement files, tech stack, deadline, and budget
-- 💬 Real-time chat with the dev team on every project
-- 💰 Accept or reject quotes
-- 💳 Submit payment proof (transaction ID and screenshot)
-- 📦 Download deliverables, request revisions, or mark the project complete
-- ⭐ Leave a rating and review
-- 🔔 Live in-app notifications and email updates
-
-</td>
-<td width="50%" valign="top">
-
-### 🛠️ For Admins
-- 📊 Dashboard covering every project and its status
-- 🧾 Send quotes with price, delivery date, and scope notes
-- ✅ Verify or reject payments
-- 📤 Upload deliverables and chat with students
-- 📣 Publish announcements (pinned and urgent)
-- 🏆 Curate the public **showcase** of completed work
-- 👥 Manage users and roles (`student`, `admin`, `superadmin`)
-- ⚙️ Platform config: payment accounts, maintenance mode, and new-project toggle
-
-</td>
-</tr>
-</table>
-
----
-
-## 🧰 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Framework** | [Next.js 14](https://nextjs.org) (App Router, Server Components) |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS, [shadcn/ui](https://ui.shadcn.com), Radix UI, Lucide icons, Geist font |
-| **Backend** | [Supabase](https://supabase.com): Postgres, Auth, Storage, Realtime, Row Level Security |
-| **Forms & Validation** | React Hook Form + Zod |
-| **State** | Zustand |
-| **Email** | Nodemailer (Gmail SMTP) + React Email |
-| **Hosting** | Vercel |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** 18.17 or later
-- A **[Supabase](https://supabase.com)** project
-- A **Gmail** account with an [App Password](https://support.google.com/accounts/answer/185833) (for email notifications)
-
-### Installation
+You need Node.js 18.17 or later, a Supabase project, and a Gmail account with an [App Password](https://support.google.com/accounts/answer/185833).
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/SheikhTrump/Project-CGSAVER.git
 cd Project-CGSAVER
-
-# 2. Install dependencies
 npm install
-
-# 3. Set up your environment variables
-cp .env.example .env
-
-# 4. Start the dev server
+cp .env.example .env   # then fill in the values
 npm run dev
 ```
 
-Open **[http://localhost:3000](http://localhost:3000)** and you're good to go 🎉
+The app runs at http://localhost:3000.
 
----
-
-## 🔑 Environment Variables
-
-Create a `.env` file in the project root (see [`.env.example`](.env.example)):
+### Environment variables
 
 | Variable | Description |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon (public) key |
-| `GMAIL_USER` | Gmail address used to send notification emails |
-| `GMAIL_APP_PASSWORD` | Gmail App Password (not your normal password) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `GMAIL_USER` | Gmail address that sends notification emails |
+| `GMAIL_APP_PASSWORD` | App Password for that account |
 | `NEXT_PUBLIC_APP_URL` | Public URL of the app, used for links in emails |
 
-> [!WARNING]
-> Never commit your real `.env` file. It is already listed in `.gitignore`.
+`.env` is gitignored. Don't commit real credentials.
 
----
+### Database
 
-## 🗄️ Database Setup
+Run the SQL files in `supabase/migrations` in order, either in the Supabase SQL editor or with the Supabase CLI:
 
-All schema, RLS policies, and triggers live in [`supabase/migrations`](supabase/migrations). Run them **in order** in the Supabase SQL Editor (or with the Supabase CLI):
+| File | What it does |
+|---|---|
+| `001_initial_schema.sql` | Core tables and row level security policies |
+| `002_showcase_features.sql` | Featured projects, reviews and announcements |
+| `003_auth_trigger.sql` | Creates a profile row when a user signs up |
+| `004_fix_rls_and_notifications.sql` | Lets students move projects to completed or revision requested |
+| `005_system_config.sql` | Platform settings and payment account details |
+| `006_payment_sender_number.sql` | Adds sender number to payments |
+| `007_security_fixes.sql` | Stops users from changing their own role, tightens policies |
+| `008_fix_showcase_columns.sql` | Adds showcase columns if they are missing |
+| `009_showcase_entries.sql` | Table for manually added showcase entries |
 
-| # | Migration | Purpose |
-|:---:|---|---|
-| 001 | `initial_schema` | Core tables (profiles, projects, files, messages, quotes, payments, notifications, reviews, announcements) + RLS |
-| 002 | `showcase_features` | Featured projects, reviews, and announcements |
-| 003 | `auth_trigger` | Auto-create a profile on sign-up |
-| 004 | `fix_rls_and_notifications` | Student status transitions and notification fixes |
-| 005 | `system_config` | Platform settings and payment account details |
-| 006 | `payment_sender_number` | Sender number on payments |
-| 007 | `security_fixes` | Blocks role escalation and tightens RLS |
-| 008 | `fix_showcase_columns` | Showcase column fixes |
-| 009 | `showcase_entries` | Manually managed showcase entries |
+Then in the Supabase dashboard:
 
-Then, in the Supabase dashboard:
+1. Create a storage bucket named `project_files`.
+2. Enable realtime on the `messages` and `notifications` tables.
+3. Sign up through the app, then make your account a superadmin:
 
-1. 📁 Create a **Storage bucket** named `project_files`.
-2. ⚡ Enable **Realtime** on the `messages` and `notifications` tables.
-3. 👑 Promote your account to admin:
    ```sql
    UPDATE public.profiles SET role = 'superadmin' WHERE email = 'you@example.com';
    ```
 
----
+## Project statuses
 
-## 📂 Project Structure
+A project goes through these statuses:
+
+`submitted` → `in_review` → `quoted` → `payment_pending` → `in_progress` → `delivered` → `completed`
+
+From `delivered`, the student can move it to `revision_requested` instead, which sends it back for more work. A project can also be `cancelled`.
+
+## Project structure
 
 ```
-cgsaver/
-├── src/
-│   ├── app/
-│   │   ├── (admin)/admin/        # 🛠️ Admin panel: projects, payments, users, config, showcase
-│   │   ├── (auth)/               # 🔐 Login, signup, forgot/reset password
-│   │   ├── (student)/dashboard/  # 👩‍🎓 Student dashboard and project pages
-│   │   ├── auth/callback/        # OAuth / email confirmation callback
-│   │   ├── showcase/             # ✨ Public portfolio of completed work
-│   │   └── page.tsx              # 🏠 Landing page
-│   ├── components/               # Shared components (chat, notifications, app shell)
-│   │   └── ui/                   # shadcn/ui primitives
-│   ├── hooks/                    # Custom React hooks (useAuth)
-│   ├── lib/                      # Supabase client, email helpers, utils
-│   ├── utils/                    # Server-side Supabase client, notifications
-│   └── middleware.ts             # 🛡️ Auth and role-based route protection
-└── supabase/
-    └── migrations/               # 🗄️ SQL migrations
+src/
+  app/
+    (admin)/admin/        admin panel
+    (auth)/               login, signup, password reset
+    (student)/dashboard/  student dashboard and project pages
+    auth/callback/        Supabase auth callback
+    showcase/             public showcase
+    page.tsx              landing page
+  components/             shared components; ui/ holds the shadcn/ui primitives
+  hooks/                  useAuth
+  lib/                    Supabase client, email sending, helpers
+  utils/                  server-side Supabase client, notifications
+  middleware.ts           redirects based on login state and role
+supabase/migrations/      database schema
 ```
 
----
+## Scripts
 
-## 🔁 Project Lifecycle
+- `npm run dev` starts the dev server
+- `npm run build` builds for production
+- `npm run start` serves the production build
+- `npm run lint` runs ESLint
 
-Every project moves through these statuses:
+## Deploying
 
-```mermaid
-flowchart LR
-    A[📝 submitted] --> B[🔍 in_review]
-    B --> C[💬 quoted]
-    C --> D[💳 payment_pending]
-    D --> E[⚙️ in_progress]
-    E --> F[📦 delivered]
-    F --> G[✅ completed]
-    F --> H[🔁 revision_requested]
-    H --> E
-    A -.-> X[❌ cancelled]
-    C -.-> X
-```
+The app is deployed on Vercel. To deploy your own copy:
 
----
-
-## 📜 Scripts
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the development server at `localhost:3000` |
-| `npm run build` | Create a production build |
-| `npm run start` | Run the production build |
-| `npm run lint` | Lint the codebase with ESLint |
-
----
-
-## ☁️ Deployment
-
-CGSAVER is deployed on **[Vercel](https://vercel.com)**:
-
-1. Import the repository into Vercel.
-2. Add every variable from [Environment Variables](#-environment-variables) in the project settings.
-3. Set `NEXT_PUBLIC_APP_URL` to your production domain.
-4. In Supabase → **Authentication → URL Configuration**, add your domain and `https://<your-domain>/auth/callback` as a redirect URL.
-5. Deploy 🚀
-
----
-
-<div align="center">
-
-Made with ❤️ in Bangladesh
-
-⭐ **Star this repo if you find it useful!**
-
-</div>
+1. Import the repository into Vercel and add the environment variables above.
+2. Set `NEXT_PUBLIC_APP_URL` to your production URL.
+3. In Supabase, under Authentication → URL Configuration, add your site URL and `https://<your-domain>/auth/callback` as a redirect URL.
